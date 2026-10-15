@@ -1,115 +1,98 @@
-import { ActionForm } from "@/components/ActionForm";
-import { Badge, Card, EmptyState, SectionTitle, inputCls } from "@/components/ui";
-import { logWorkoutAction } from "@/actions/client";
+import Link from "next/link";
+
+import { CCard, EmptyState } from "@/components/client/ui";
+import { TabLinks } from "@/components/client/tab-links";
 import { getClientDashboard } from "@/lib/client-queries";
 import { requireClient } from "@/lib/session";
+import { weekProgress } from "@/lib/client-utils";
 
-function timeAgo(iso: Date | string) {
-  const ms = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(ms / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return days === 1 ? "yesterday" : `${days}d ago`;
-}
-
-export default async function WorkoutsPage() {
+export default async function WorkoutsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { client } = await requireClient();
+  const sp = await searchParams;
+  const tab = sp.tab === "all" ? "all" : "plan";
   const data = await getClientDashboard(client.id);
-  if (!data.wAssign) {
+
+  if (!data.wAssign || data.workoutDaysWithEx.length === 0) {
     return (
-      <div>
+      <div className="space-y-5">
         <h1 className="text-2xl font-semibold tracking-tight">Workouts</h1>
-        <p className="mt-1 text-sm text-zinc-500">Your assigned program</p>
-        <div className="mt-4">
-          <EmptyState title="No workout assigned" hint="Your trainer will assign a program soon." />
-        </div>
+        <EmptyState title="No workout assigned" hint="Your trainer will assign a program soon." />
       </div>
     );
   }
-  const totalExercises = data.workoutDaysWithEx.reduce((s, d) => s + d.exercises.length, 0);
+
+  const days = data.workoutDaysWithEx;
+  const completed = days.filter((d) => data.completedDayIds.includes(d.id)).length;
+  const wp = weekProgress(data.wAssign.assignment.startDate, data.wAssign.program.durationWeeks);
+  const pct = days.length ? Math.round((completed / days.length) * 100) : 0;
+
   return (
     <div className="space-y-5">
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{data.wAssign.program.name}</h1>
-          <Badge tone="green">{data.wAssign.program.durationWeeks} weeks</Badge>
-        </div>
-        <p className="mt-1 text-sm text-zinc-500">
-          Started {data.wAssign.assignment.startDate} · {data.workoutDaysWithEx.length} days · {totalExercises} exercises
-        </p>
-        {data.wAssign.program.description ? (
-          <p className="mt-2 text-sm text-zinc-600">{data.wAssign.program.description}</p>
-        ) : null}
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Workouts</h1>
 
-      <section aria-label="Training days" className="space-y-4">
-        <SectionTitle title="Training days" hint="Log each day when you finish it" />
-        {data.workoutDaysWithEx.map((d) => (
-          <Card key={d.id} className="!p-0 overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-3.5">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-950 text-sm font-bold text-white">
-                  {d.dayNumber}
-                </span>
-                <div>
-                  <h2 className="font-semibold leading-tight">{d.name}</h2>
-                  <p className="text-xs text-zinc-500">{d.exercises.length} exercises</p>
-                </div>
-              </div>
-            </div>
-            <ul className="divide-y divide-zinc-100 px-2">
-              {d.exercises.map((e, i) => (
-                <li key={e.id} className="flex items-center gap-3 px-3 py-2.5">
-                  <span className="w-5 shrink-0 text-xs font-semibold text-zinc-400">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{e.name}</span>
-                    <span className="block truncate text-xs text-zinc-500">
-                      {[e.restSeconds ? `${e.restSeconds}s rest` : null, e.notes].filter(Boolean).join(" · ") || "—"}
-                    </span>
-                  </span>
-                  <span className="shrink-0 rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-semibold text-zinc-700">
-                    {e.sets}×{e.reps}
-                  </span>
-                </li>
-              ))}
-              {d.exercises.length === 0 ? (
-                <li className="px-3 py-3 text-sm text-zinc-500">No exercises in this day.</li>
-              ) : null}
-            </ul>
-            <div className="border-t border-zinc-100 bg-zinc-50/60 px-5 py-4">
-              <ActionForm action={logWorkoutAction} submitLabel={`Mark Day ${d.dayNumber} complete`}>
-                <input type="hidden" name="assignmentId" value={data.wAssign!.assignment.id} />
-                <input type="hidden" name="workoutDayId" value={d.id} />
-                <input name="notes" placeholder="How did it feel? (optional)" maxLength={1000} className={inputCls} />
-              </ActionForm>
-            </div>
-          </Card>
-        ))}
-      </section>
+      <TabLinks
+        activeKey={tab}
+        tabs={[
+          { key: "plan", label: "Current Plan" },
+          { key: "all", label: "All Workouts" },
+        ]}
+      />
 
-      {data.recentWorkouts.length > 0 ? (
-        <section aria-label="History">
-          <SectionTitle title="History" hint="Your recent completions" />
-          <Card className="!p-2">
-            <ul className="divide-y divide-zinc-100">
-              {data.recentWorkouts.map((w) => (
-                <li key={w.id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
-                  <span className="flex items-center gap-2 font-medium">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime-100 text-xs font-bold text-lime-800">
-                      ✓
-                    </span>
-                    Workout completed
-                  </span>
-                  <span className="shrink-0 text-xs text-zinc-500">{timeAgo(w.completedAt)}</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </section>
+      {tab === "plan" ? (
+        <CCard>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-zinc-100">
+                Week {wp.week} · {data.wAssign.program.name}
+              </p>
+              <p className="text-xs text-zinc-500">
+                {completed}/{days.length} days completed
+              </p>
+            </div>
+            <span className="text-sm font-bold text-gold">{pct}%</span>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+          </div>
+        </CCard>
       ) : null}
+
+      <div className="space-y-3">
+        {days.map((d) => {
+          const done = data.completedDayIds.includes(d.id);
+          return (
+            <Link
+              key={d.id}
+              href={`/client/workouts/${d.id}`}
+              className={`flex items-center gap-3 rounded-3xl border px-4 py-4 transition ${
+                done ? "border-gold/40 bg-gold/5" : "border-white/10 bg-zinc-900/70 hover:bg-zinc-900"
+              }`}
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/5 text-sm font-bold text-zinc-200">
+                {String(d.dayNumber).padStart(2, "0")}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{d.name}</span>
+                <span className="block truncate text-xs text-zinc-500">
+                  {d.muscleGroups ?? `${d.exercises.length} exercises`}
+                </span>
+              </span>
+              <span className="shrink-0 text-right text-xs text-zinc-500">
+                {d.exercises.length} ex
+              </span>
+              <span
+                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
+                  done ? "bg-emerald-500 text-zinc-950" : "border border-white/20 text-transparent"
+                }`}
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={3}>
+                  <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -1,59 +1,55 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
 
-import { ClientTabBar } from "@/components/client-nav";
-import { SignOutButton } from "@/components/SignOutButton";
-import { Avatar } from "@/components/ui";
+import { ClientTabBar } from "@/components/client/client-tab-bar";
 import { requireClient } from "@/lib/session";
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#0a0a0b",
 };
 
-const links = [
-  { href: "/client", label: "Today" },
-  { href: "/client/workouts", label: "Workouts" },
-  { href: "/client/nutrition", label: "Nutrition" },
-  { href: "/client/progress", label: "Progress" },
-  { href: "/client/profile", label: "Profile" },
-];
+function GoldAvatar({ name }: { name?: string | null }) {
+  const initial = (name?.trim()?.[0] ?? "R").toUpperCase();
+  return (
+    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold font-semibold text-zinc-950">
+      {initial}
+    </span>
+  );
+}
 
 export default async function ClientLayout({ children }: { children: ReactNode }) {
-  const { user } = await requireClient();
+  const { user, client } = await requireClient();
+  if (!client.onboardingCompleted) redirect("/onboarding");
+
   return (
-    <div className="min-h-dvh bg-zinc-50 text-zinc-900 [color-scheme:light]">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/client" className="flex items-center gap-2.5">
-            <Avatar name={user.name} size="sm" />
-            <span>
-              <span className="block text-sm font-bold uppercase leading-none tracking-[0.18em] text-lime-700">
-                Repora
-              </span>
-              <span className="mt-0.5 block max-w-40 truncate text-xs text-zinc-500">{user.name}</span>
+    <div className="min-h-dvh bg-ink text-zinc-100 [color-scheme:dark]">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-ink/90 backdrop-blur">
+        <div className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-3">
+          <Link href="/client" className="flex items-center gap-2">
+            <span className="grid h-8 w-8 place-items-center rounded-xl border border-white/10 bg-white/5">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 text-gold" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path d="M5 7h14M5 12h9M5 17h5" strokeLinecap="round" />
+              </svg>
             </span>
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-100">Repora</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <nav className="mr-1 hidden items-center gap-1 text-sm md:flex" aria-label="Client sections">
-              {links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="rounded-full px-3 py-1.5 font-medium text-zinc-600 hover:bg-lime-100 hover:text-lime-800"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
-            <SignOutButton />
+          <div className="flex items-center gap-3">
+            <button type="button" aria-label="Notifications" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-400">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                <path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 13 6 9Z" strokeLinejoin="round" />
+                <path d="M10 18a2 2 0 0 0 4 0" strokeLinecap="round" />
+              </svg>
+            </button>
+            <Link href="/client/profile" aria-label="Profile">
+              <GoldAvatar name={user.name} />
+            </Link>
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-2xl px-4 pb-28 pt-5 md:pb-16">{children}</main>
-      <div className="md:hidden">
-        <ClientTabBar />
-      </div>
+      <main className="mx-auto w-full max-w-md px-4 pb-28 pt-5">{children}</main>
+      <ClientTabBar />
     </div>
   );
 }

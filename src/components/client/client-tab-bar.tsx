@@ -6,11 +6,10 @@ import { usePathname } from "next/navigation";
 const tabs = [
   {
     href: "/client",
-    label: "Today",
+    label: "Home",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} className="h-5 w-5">
-        <rect x="3" y="4" width="18" height="17" rx="3" />
-        <path d="M8 2v4M16 2v4M3 9h18" strokeLinecap="round" />
+        <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-9.5Z" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -44,11 +43,10 @@ const tabs = [
   },
   {
     href: "/client/profile",
-    label: "Profile",
+    label: "More",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} className="h-5 w-5">
-        <circle cx="12" cy="8" r="3.5" />
-        <path d="M4.5 20c1.5-3.5 4.5-5 7.5-5s6 1.5 7.5 5" strokeLinecap="round" />
+        <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -59,10 +57,10 @@ export function ClientTabBar() {
   return (
     <nav
       aria-label="Client sections"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-zinc-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/95 backdrop-blur supports-[backdrop-filter]:bg-ink/85"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto grid max-w-2xl grid-cols-5 px-2 pb-2 pt-1.5">
+      <div className="mx-auto grid max-w-md grid-cols-5 px-2 pb-2 pt-1.5">
         {tabs.map((t) => {
           const active = t.href === "/client" ? pathname === "/client" : pathname.startsWith(t.href);
           return (
@@ -70,11 +68,11 @@ export function ClientTabBar() {
               key={t.href}
               href={t.href}
               aria-current={active ? "page" : undefined}
-              className={`flex flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-[11px] font-medium transition ${
-                active ? "text-lime-700" : "text-zinc-500 hover:text-zinc-800"
+              className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 text-[11px] font-medium transition ${
+                active ? "text-gold" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              <span className={`rounded-full px-4 py-1 ${active ? "bg-lime-100" : ""}`}>{t.icon(active)}</span>
+              {t.icon(active)}
               {t.label}
             </Link>
           );

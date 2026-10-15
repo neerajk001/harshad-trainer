@@ -47,9 +47,22 @@ See `.env.example` for the exact variables. `.env.local` is gitignored — never
 - Trainer `/trainer`: totals, active-this-week, needing-attention (no log/check-in in 7d), recent activity — all from real DB queries (scoped to the signed-in trainer's clients).
 - Trainer `/trainer/clients`: search + add client, pause/activate a client; `/trainer/clients/[id]`: profile, assign/unassign workout + diet plans, view logs + check-ins.
 - Trainer `/trainer/programs`: CRUD programs, days, exercises (including delete day/exercise). `/trainer/diet-plans`: CRUD plans, meals, food items (including delete meal/food).
-- Client `/client`: today's workout (rotates by weekday), quick meal log, recent progress. `/client/workouts`, `/client/nutrition`, `/client/progress` (weight history + check-in form), `/client/profile`.
+- Client app (mobile-first, dark + gold): `/client` dashboard, `/client/workouts` (list + day detail + per-set exercise log), `/client/nutrition` (today + diet plan) and `/client/nutrition/add` (searchable food library), `/client/progress`, `/client/checkin`, `/client/profile`.
+- Public: `/` landing, `/signup` (email self-sign-up), `/onboarding` + `/onboarding/details` (goal + metrics captured on first login). Trainer-created clients skip onboarding.
 - Loading, error, and 404 states are handled at the app root plus per-portal skeletons.
 - PWA: manifest + theme color + icons; service worker (`public/sw.js`) registered on `npm run start`/production, not in dev. Offline covers app shell + an `/offline.html` fallback — DB reads/writes require network.
+
+## Data model additions (migration `0001`)
+
+- `clients`: `gender`, `age`, `height_cm`, `current_weight_kg`, `target_weight_kg`, `activity_level`, `onboarding_completed`; `trainer_id` is now nullable (self-registered clients).
+- `exercise_set_logs`: per-set weight/reps logged from the exercise screen.
+- `foods`: seeded food library used by "Add Meal" search.
+- `progress_checkins`: `muscle_mass`, `feel`, `sleep_hours`, `energy_level`, `stress_level`.
+- `meal_logs` / `diet_food_items` / `diet_plans`: carbs + fat (and meal type).
+- Photos are intentionally not implemented (out of scope); the UI shows a placeholder.
+
+Run `npm run db:generate` then `npm run db:migrate` to apply. `npm run db:seed` also seeds the food library.
+
 
 ## Scripts
 

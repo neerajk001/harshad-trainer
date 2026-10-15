@@ -1,68 +1,87 @@
-import { Avatar, Badge, Card, SectionTitle } from "@/components/ui";
-import { getClientProfile } from "@/lib/client-queries";
+import Link from "next/link";
+
+import { CCard } from "@/components/client/ui";
+import { SignOutButton } from "@/components/SignOutButton";
+import { getClientDashboard, getClientProfile } from "@/lib/client-queries";
 import { requireClient } from "@/lib/session";
+import { goalLabel } from "@/lib/client-utils";
 
 export default async function ProfilePage() {
   const { user } = await requireClient();
   const profile = await getClientProfile(user.id);
-  if (!profile) return <p className="p-4 text-sm">Profile not found.</p>;
-  const since = new Date(profile.client.createdAt).toLocaleDateString(undefined, {
-    month: "short",
-    year: "numeric",
-  });
+  if (!profile) return <p className="text-sm text-zinc-500">Profile not found.</p>;
+  const data = await getClientDashboard(profile.client.id);
+
+  const initials = (profile.user.name ?? "R").trim().slice(0, 1).toUpperCase();
+  const planLabel = data.wAssign ? `${data.wAssign.program.name} (${data.wAssign.program.durationWeeks} Weeks)` : null;
+
+  const rows = [
+    { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null, tint: "#f97316", soon: false },
+    { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null, tint: "#60a5fa", soon: false },
+    { label: "Progress", value: "", href: "/client/progress", tint: "#4ade80", soon: false },
+    { label: "Measurements", value: "", href: "/client/progress?tab=measure", tint: "#f472b6", soon: false },
+    { label: "Photos", value: "", href: null, tint: "#a78bfa", soon: true },
+    { label: "Notifications", value: "", href: null, tint: "#facc15", soon: true },
+    { label: "Settings", value: "", href: null, tint: "#94a3b8", soon: true },
+    { label: "Help & Support", value: "", href: null, tint: "#22d3ee", soon: true },
+  ];
 
   return (
     <div className="space-y-5">
-      <Card className="flex items-center gap-4">
-        <Avatar name={profile.user.name} size="lg" />
-        <div className="min-w-0">
+      <CCard className="flex items-center gap-4">
+        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-gold text-2xl font-bold text-zinc-950">{initials}</span>
+        <div className="min-w-0 flex-1">
           <h1 className="truncate text-xl font-semibold tracking-tight">{profile.user.name}</h1>
           <p className="truncate text-sm text-zinc-500">{profile.user.email}</p>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            <Badge tone="green">{profile.client.status}</Badge>
-            <Badge>Client since {since}</Badge>
-          </div>
         </div>
-      </Card>
+        <button type="button" aria-label="Edit profile" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-400">
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
+            <path d="M4 20h4l10-10-4-4L4 16v4Z" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </CCard>
 
-      <section aria-label="Goal">
-        <SectionTitle title="Goal" />
-        <Card className="border-lime-200 bg-lime-50/60">
-          <p className="text-[15px] font-medium leading-relaxed">{profile.client.goal ?? "No goal set yet — ask your trainer to add one."}</p>
-        </Card>
-      </section>
+      <CCard className="!p-2">
+        <ul className="divide-y divide-white/5">
+          {rows.map((r) => {
+            const inner = (
+              <span className="flex items-center gap-3 px-3 py-3.5">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ background: `${r.tint}22` }}>
+                  <span className="h-3.5 w-3.5 rounded-full" style={{ background: r.tint }} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">{r.label}</span>
+                  {r.value ? <span className="block truncate text-xs text-zinc-500">{r.value}</span> : null}
+                </span>
+                {r.href ? (
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 text-zinc-600" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : r.soon ? (
+                  <span className="text-xs text-zinc-600">Soon</span>
+                ) : null}
+              </span>
+            );
+            return (
+              <li key={r.label}>
+                {r.href ? (
+                  <Link href={r.href} className="block rounded-2xl transition hover:bg-white/5">
+                    {inner}
+                  </Link>
+                ) : (
+                  <div className={r.soon ? "opacity-70" : ""}>{inner}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </CCard>
 
-      <section aria-label="Details">
-        <SectionTitle title="Details" />
-        <Card className="!p-2">
-          <dl className="divide-y divide-zinc-100 text-sm">
-            {[
-              ["Trainer", profile.trainer?.name ?? "—"],
-              ["Status", profile.client.status],
-              ["Email", profile.user.email],
-              ["Member since", new Date(profile.client.createdAt).toLocaleDateString()],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 px-3 py-2.5">
-                <dt className="text-zinc-500">{k}</dt>
-                <dd className="truncate font-medium">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </Card>
-      </section>
+      <SignOutButton className="w-full rounded-2xl border border-red-500/30 px-5 py-3.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/10" />
 
-      {profile.trainer ? (
-        <section aria-label="Trainer">
-          <SectionTitle title="Your trainer" />
-          <Card className="flex items-center gap-3">
-            <Avatar name={profile.trainer.name} size="md" />
-            <div>
-              <p className="font-semibold">{profile.trainer.name}</p>
-              <p className="text-xs text-zinc-500">Assigned to your program and diet plan</p>
-            </div>
-          </Card>
-        </section>
-      ) : null}
+      <p className="text-center text-xs text-zinc-600">
+        {profile.trainer ? `Trainer: ${profile.trainer.name}` : "No trainer linked yet"}
+      </p>
     </div>
   );
 }

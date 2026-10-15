@@ -4,11 +4,16 @@
   --background: #ffffff;
   --foreground: #171717;
   --brand: #65a30d;
+  --gold: #f5c518;
+  --ink: #0a0a0b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-gold: var(--gold);
+  --color-ink: var(--ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

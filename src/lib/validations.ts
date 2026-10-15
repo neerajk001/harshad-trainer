@@ -15,6 +15,41 @@ export const addClientSchema = z.object({
   goal: z.string().trim().max(500).optional(),
 });
 
+export const registerSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(120),
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+export const onboardingGoalSchema = z.object({
+  goal: z.enum(["lose_fat", "build_muscle", "get_stronger", "general_fitness"], {
+    message: "Pick a goal",
+  }),
+});
+
+export const onboardingDetailsSchema = z.object({
+  gender: z.enum(["male", "female"]),
+  age: z.coerce.number().int().min(13).max(100),
+  heightCm: z.coerce.number().int().min(90).max(250),
+  currentWeightKg: z.coerce.number().min(30).max(400),
+  targetWeightKg: z.coerce.number().min(30).max(400),
+  activityLevel: z.enum(["sedentary", "moderate", "active"]),
+});
+
+export const exerciseLogSchema = z.object({
+  exerciseId: z.uuid(),
+  workoutDayId: z.uuid().optional(),
+  notes: z.string().trim().max(1000).optional(),
+  sets: z
+    .array(
+      z.object({
+        weight: z.coerce.number().min(0).max(2000).optional(),
+        reps: z.coerce.number().int().min(0).max(1000).optional(),
+      }),
+    )
+    .max(30),
+});
+
 export const programSchema = z.object({
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(2000).optional(),
@@ -25,6 +60,7 @@ export const workoutDaySchema = z.object({
   programId: z.uuid(),
   name: z.string().trim().min(1).max(120),
   dayNumber: z.coerce.number().int().min(1).max(30),
+  muscleGroups: z.string().trim().max(200).optional(),
 });
 
 export const exerciseSchema = z.object({
@@ -34,6 +70,7 @@ export const exerciseSchema = z.object({
   reps: z.string().trim().min(1).max(20).default("10"),
   restSeconds: z.coerce.number().int().min(0).max(1800).optional(),
   notes: z.string().trim().max(500).optional(),
+  muscleGroup: z.string().trim().max(80).optional(),
 });
 
 export const assignWorkoutSchema = z.object({
@@ -46,6 +83,8 @@ export const dietPlanSchema = z.object({
   name: z.string().trim().min(1).max(120),
   dailyCalories: z.coerce.number().int().min(0).max(20000).optional(),
   proteinTarget: z.coerce.number().int().min(0).max(2000).optional(),
+  carbsTarget: z.coerce.number().int().min(0).max(2000).optional(),
+  fatTarget: z.coerce.number().int().min(0).max(2000).optional(),
   notes: z.string().trim().max(2000).optional(),
 });
 
@@ -60,6 +99,8 @@ export const foodItemSchema = z.object({
   quantity: z.string().trim().max(120).optional(),
   calories: z.coerce.number().int().min(0).max(10000).optional(),
   protein: z.coerce.number().int().min(0).max(2000).optional(),
+  carbs: z.coerce.number().int().min(0).max(2000).optional(),
+  fat: z.coerce.number().int().min(0).max(2000).optional(),
 });
 
 export const assignDietSchema = z.object({
@@ -71,8 +112,11 @@ export const assignDietSchema = z.object({
 export const mealLogSchema = z.object({
   foodName: z.string().trim().min(1).max(160),
   quantity: z.string().trim().max(120).optional(),
+  mealType: z.enum(["breakfast", "lunch", "snack", "dinner"]).optional(),
   calories: z.coerce.number().int().min(0).max(10000).optional(),
   protein: z.coerce.number().int().min(0).max(2000).optional(),
+  carbs: z.coerce.number().int().min(0).max(2000).optional(),
+  fat: z.coerce.number().int().min(0).max(2000).optional(),
 });
 
 export const workoutLogSchema = z.object({
@@ -84,6 +128,11 @@ export const workoutLogSchema = z.object({
 export const checkinSchema = z.object({
   weight: z.coerce.number().min(20).max(500),
   bodyFatPercent: z.coerce.number().min(1).max(80).optional(),
+  muscleMass: z.coerce.number().min(1).max(300).optional(),
+  feel: z.string().trim().max(60).optional(),
+  sleepHours: z.coerce.number().min(0).max(24).optional(),
+  energyLevel: z.string().trim().max(60).optional(),
+  stressLevel: z.string().trim().max(60).optional(),
   chest: z.string().trim().max(20).optional(),
   waist: z.string().trim().max(20).optional(),
   hips: z.string().trim().max(20).optional(),

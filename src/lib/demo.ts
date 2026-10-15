@@ -35,7 +35,7 @@ function toUser(u: (typeof demoUsers)[number]): User {
   return { ...u, passwordHash: "demo", createdAt: D(u.createdAt) };
 }
 function toClient(c: (typeof demoClients)[number]): Client {
-  return { ...c, createdAt: D(c.createdAt) };
+  return { ...c, onboardingCompleted: c.onboardingCompleted ?? true, createdAt: D(c.createdAt) };
 }
 
 /** Demo sign-in accounts (DEMO_MODE only, no database). */
@@ -156,6 +156,7 @@ export function getDemoPrograms(trainerId: string) {
               programId: prog.id,
               dayNumber: d.dayNumber,
               name: d.name,
+              muscleGroups: null,
             }) satisfies Day,
         )
         .sort((a, b) => a.dayNumber - b.dayNumber)
@@ -171,6 +172,8 @@ export function getDemoPrograms(trainerId: string) {
                 reps: e.reps,
                 restSeconds: e.restSeconds,
                 notes: e.notes,
+                instructions: null,
+                muscleGroup: null,
                 sortOrder: e.sortOrder,
               }) satisfies Exercise,
           );
@@ -189,6 +192,8 @@ export function getDemoDietPlans(trainerId: string) {
       name: p.name,
       dailyCalories: p.dailyCalories,
       proteinTarget: p.proteinTarget,
+      carbsTarget: null,
+      fatTarget: null,
       notes: p.notes,
       createdAt: D(p.createdAt),
     }) satisfies DietPlan)
@@ -216,6 +221,8 @@ export function getDemoDietPlans(trainerId: string) {
                 quantity: f.quantity,
                 calories: f.calories,
                 protein: f.protein,
+                carbs: null,
+                fat: null,
               }) satisfies Food,
           );
           return { ...meal, foods };
@@ -240,20 +247,17 @@ export function getDemoDashboard(clientId: string) {
     .map((a) => ({ ...a, createdAt: D(a.createdAt) }) satisfies DietAssignment)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
+  const trainerId = demoClients.find((c) => c.id === clientId)?.trainerId ?? "";
   const wAssign = wList[0]
     ? {
         assignment: wList[0],
-        program: getDemoPrograms(demoClients.find((c) => c.id === clientId)!.trainerId).find(
-          (p) => p.id === wList[0].programId,
-        )!,
+        program: getDemoPrograms(trainerId).find((p) => p.id === wList[0].programId)!,
       }
     : null;
   const dAssign = dList[0]
     ? {
         assignment: dList[0],
-        plan: getDemoDietPlans(demoClients.find((c) => c.id === clientId)!.trainerId).find(
-          (p) => p.id === dList[0].dietPlanId,
-        )!,
+        plan: getDemoDietPlans(trainerId).find((p) => p.id === dList[0].dietPlanId)!,
       }
     : null;
 
@@ -267,15 +271,23 @@ export function getDemoDashboard(clientId: string) {
     .slice(0, 5);
   const recentMeals = raw.mealLogs
     .filter((m) => m.clientId === clientId)
-    .map((m) => ({ ...m, loggedAt: D(m.loggedAt) }) satisfies MealLog)
+    .map(
+      (m) =>
+        ({ ...m, mealType: null, carbs: null, fat: null, loggedAt: D(m.loggedAt) }) satisfies MealLog,
+    )
     .sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime())
-    .slice(0, 5);
+    .slice(0, 40);
   const checkins = raw.checkins
     .filter((c) => c.clientId === clientId)
     .map(
       (c) =>
         ({
           ...c,
+          muscleMass: null,
+          feel: null,
+          sleepHours: null,
+          energyLevel: null,
+          stressLevel: null,
           measurementsJson: (c.measurementsJson ?? null) as Record<string, string> | null,
           createdAt: D(c.createdAt),
         }) satisfies Checkin,
@@ -283,7 +295,15 @@ export function getDemoDashboard(clientId: string) {
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 20);
 
-  return { wAssign, dAssign, workoutDaysWithEx, dietMealsWithFood, recentWorkouts, recentMeals, checkins };
+  const completedDayIds = Array.from(
+    new Set(
+      raw.workoutLogs
+        .filter((l) => l.clientId === clientId && l.workoutDayId)
+        .map((l) => l.workoutDayId as string),
+    ),
+  );
+
+  return { wAssign, dAssign, workoutDaysWithEx, dietMealsWithFood, recentWorkouts, recentMeals, checkins, completedDayIds };
 }
 
 export function getDemoProfile(userId: string) {
@@ -292,4 +312,51 @@ export function getDemoProfile(userId: string) {
   const user = demoUsers.find((u) => u.id === userId)!;
   const trainer = demoUsers.find((u) => u.id === client.trainerId);
   return { client: toClient(client), user: toUser(user), trainer: trainer ? toUser(trainer) : undefined };
+}
+
+export type FoodRow = typeof import("@/db/schema").foods.$inferSelect;
+type MealLogRow = typeof mealLogs.$inferSelect;
+
+const DEMO_FOODS: FoodRow[] = [
+  { id: "food-chicken", name: "Chicken Breast", serving: "100g", calories: 165, protein: 31, carbs: 0, fat: 4, isPopular: true },
+  { id: "food-egg", name: "Egg", serving: "1 large", calories: 72, protein: 6, carbs: 0, fat: 5, isPopular: true },
+  { id: "food-roti", name: "Roti", serving: "1 medium", calories: 104, protein: 3, carbs: 22, fat: 0, isPopular: true },
+  { id: "food-rice", name: "Cooked Rice", serving: "130g", calories: 130, protein: 3, carbs: 28, fat: 0, isPopular: true },
+  { id: "food-oatmeal", name: "Oats", serving: "40g", calories: 150, protein: 5, carbs: 27, fat: 3, isPopular: true },
+  { id: "food-paneer", name: "Paneer", serving: "100g", calories: 265, protein: 18, carbs: 3, fat: 21, isPopular: true },
+  { id: "food-banana", name: "Banana", serving: "1 medium", calories: 105, protein: 1, carbs: 27, fat: 0, isPopular: true },
+  { id: "food-dal", name: "Dal", serving: "1 bowl", calories: 180, protein: 12, carbs: 30, fat: 1, isPopular: true },
+  { id: "food-whey", name: "Whey Protein", serving: "1 scoop", calories: 120, protein: 24, carbs: 3, fat: 1, isPopular: true },
+  { id: "food-curd", name: "Curd", serving: "100g", calories: 60, protein: 3, carbs: 5, fat: 3, isPopular: false },
+  { id: "food-almonds", name: "Almonds", serving: "10 pcs", calories: 70, protein: 3, carbs: 3, fat: 6, isPopular: false },
+  { id: "food-salmon", name: "Salmon", serving: "100g", calories: 208, protein: 20, carbs: 0, fat: 13, isPopular: false },
+];
+
+export function getDemoExerciseHistory(_clientId: string, _exerciseId: string) {
+  void _clientId;
+  void _exerciseId;
+  return [] as Array<{
+    id: string;
+    clientId: string;
+    workoutDayId: string | null;
+    exerciseId: string;
+    setNumber: number;
+    weight: number | null;
+    reps: number | null;
+    loggedAt: Date;
+  }>;
+}
+
+export function getDemoFoodCatalog(clientId: string, search?: string) {
+  const q = (search ?? "").trim().toLowerCase();
+  const results = q ? DEMO_FOODS.filter((f) => f.name.toLowerCase().includes(q)) : DEMO_FOODS.filter((f) => f.isPopular);
+  const popular = DEMO_FOODS.filter((f) => f.isPopular);
+  const recent: MealLogRow[] = raw.mealLogs
+    .filter((m) => m.clientId === clientId)
+    .map(
+      (m) =>
+        ({ ...m, mealType: null, carbs: null, fat: null, loggedAt: D(m.loggedAt) }) satisfies MealLogRow,
+    )
+    .sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
+  return { results, popular, recent };
 }

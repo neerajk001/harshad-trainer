@@ -8,6 +8,13 @@
       "when": 1791884606777,
       "tag": "0000_nifty_tiger_shark",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792073836522,
+      "tag": "0001_purple_harrier",
+      "breakpoints": true
     }
   ]
 }

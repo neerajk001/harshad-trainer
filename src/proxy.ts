@@ -7,7 +7,9 @@ export async function proxy(request: Request) {
   const { pathname } = url;
 
   const isPublic =
+    pathname === "/" ||
     pathname === "/login" ||
+    pathname === "/signup" ||
     pathname.startsWith("/api/auth") ||
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
@@ -21,12 +23,12 @@ export async function proxy(request: Request) {
     return NextResponse.redirect(url);
   }
 
-  if (session?.user && (pathname === "/" || pathname === "/login")) {
+  if (session?.user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
     url.pathname = session.user.role === "trainer" ? "/trainer" : "/client";
     return NextResponse.redirect(url);
   }
 
-  if (session?.user?.role === "trainer" && pathname.startsWith("/client")) {
+  if (session?.user?.role === "trainer" && (pathname.startsWith("/client") || pathname.startsWith("/onboarding"))) {
     url.pathname = "/trainer";
     return NextResponse.redirect(url);
   }

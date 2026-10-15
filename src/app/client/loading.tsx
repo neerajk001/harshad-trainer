@@ -1,17 +1,15 @@
-import { Skeleton } from "@/components/ui";
-
 export default function Loading() {
+  const sk = "animate-pulse rounded-3xl bg-white/5";
   return (
-    <div>
-      <Skeleton className="h-8 w-56" />
-      <Skeleton className="mt-2 h-4 w-72" />
-      <div className="mt-5 grid grid-cols-3 gap-2.5">
-        <Skeleton className="h-20" />
-        <Skeleton className="h-20" />
-        <Skeleton className="h-20" />
+    <div className="space-y-5">
+      <div className={`${sk} h-8 w-56`} />
+      <div className={`${sk} h-56`} />
+      <div className="grid grid-cols-3 gap-2.5">
+        <div className={`${sk} h-24`} />
+        <div className={`${sk} h-24`} />
+        <div className={`${sk} h-24`} />
       </div>
-      <Skeleton className="mt-5 h-44" />
-      <Skeleton className="mt-5 h-64" />
+      <div className={`${sk} h-64`} />
     </div>
   );
 }

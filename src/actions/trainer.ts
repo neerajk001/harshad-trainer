@@ -87,6 +87,7 @@ export async function addClientAction(formData: FormData) {
     trainerId: user.id,
     status: "active",
     goal: parsed.data.goal?.trim() || null,
+    onboardingCompleted: true,
   });
   revalidatePath("/trainer/clients");
   revalidatePath("/trainer");
@@ -179,6 +180,7 @@ export async function addWorkoutDayAction(formData: FormData) {
     programId: formData.get("programId"),
     name: formData.get("name"),
     dayNumber: formData.get("dayNumber"),
+    muscleGroups: formData.get("muscleGroups") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   const prog = await db
@@ -191,6 +193,7 @@ export async function addWorkoutDayAction(formData: FormData) {
     programId: parsed.data.programId,
     name: parsed.data.name.trim(),
     dayNumber: parsed.data.dayNumber,
+    muscleGroups: parsed.data.muscleGroups?.trim() || null,
   });
   revalidatePath("/trainer/programs");
   return ok();
@@ -206,6 +209,7 @@ export async function addExerciseAction(formData: FormData) {
     reps: formData.get("reps"),
     restSeconds: formData.get("restSeconds") || undefined,
     notes: formData.get("notes") || undefined,
+    muscleGroup: formData.get("muscleGroup") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   // Verify ownership through program join
@@ -225,6 +229,7 @@ export async function addExerciseAction(formData: FormData) {
     reps: parsed.data.reps.trim(),
     restSeconds: parsed.data.restSeconds ?? null,
     notes: parsed.data.notes?.trim() || null,
+    muscleGroup: parsed.data.muscleGroup?.trim() || null,
     sortOrder: existing.length,
   });
   revalidatePath("/trainer/programs");
@@ -279,6 +284,8 @@ export async function createDietPlanAction(formData: FormData) {
     name: formData.get("name"),
     dailyCalories: formData.get("dailyCalories") || undefined,
     proteinTarget: formData.get("proteinTarget") || undefined,
+    carbsTarget: formData.get("carbsTarget") || undefined,
+    fatTarget: formData.get("fatTarget") || undefined,
     notes: formData.get("notes") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -287,6 +294,8 @@ export async function createDietPlanAction(formData: FormData) {
     name: parsed.data.name.trim(),
     dailyCalories: parsed.data.dailyCalories ?? null,
     proteinTarget: parsed.data.proteinTarget ?? null,
+    carbsTarget: parsed.data.carbsTarget ?? null,
+    fatTarget: parsed.data.fatTarget ?? null,
     notes: parsed.data.notes?.trim() || null,
   });
   revalidatePath("/trainer/diet-plans");
@@ -301,6 +310,8 @@ export async function updateDietPlanAction(formData: FormData) {
     name: formData.get("name"),
     dailyCalories: formData.get("dailyCalories") || undefined,
     proteinTarget: formData.get("proteinTarget") || undefined,
+    carbsTarget: formData.get("carbsTarget") || undefined,
+    fatTarget: formData.get("fatTarget") || undefined,
     notes: formData.get("notes") || undefined,
   });
   if (!id || !parsed.success) return fail("Invalid input");
@@ -310,6 +321,8 @@ export async function updateDietPlanAction(formData: FormData) {
       name: parsed.data.name.trim(),
       dailyCalories: parsed.data.dailyCalories ?? null,
       proteinTarget: parsed.data.proteinTarget ?? null,
+      carbsTarget: parsed.data.carbsTarget ?? null,
+      fatTarget: parsed.data.fatTarget ?? null,
       notes: parsed.data.notes?.trim() || null,
     })
     .where(and(eq(dietPlans.id, id), eq(dietPlans.trainerId, user.id)));
@@ -357,6 +370,8 @@ export async function addFoodItemAction(formData: FormData) {
     quantity: formData.get("quantity") || undefined,
     calories: formData.get("calories") || undefined,
     protein: formData.get("protein") || undefined,
+    carbs: formData.get("carbs") || undefined,
+    fat: formData.get("fat") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   const meal = await db.select().from(dietMeals).where(eq(dietMeals.id, parsed.data.mealId)).limit(1);
@@ -373,6 +388,8 @@ export async function addFoodItemAction(formData: FormData) {
     quantity: parsed.data.quantity?.trim() || null,
     calories: parsed.data.calories ?? null,
     protein: parsed.data.protein ?? null,
+    carbs: parsed.data.carbs ?? null,
+    fat: parsed.data.fat ?? null,
   });
   revalidatePath("/trainer/diet-plans");
   return ok();

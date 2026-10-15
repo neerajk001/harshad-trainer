@@ -1,145 +1,144 @@
-import { ActionForm } from "@/components/ActionForm";
-import { Badge, Card, SectionTitle, Stat, inputCls } from "@/components/ui";
-import { submitCheckinAction } from "@/actions/client";
+import Link from "next/link";
+
+import { CCard, EmptyState, goldBtn, StatTile } from "@/components/client/ui";
+import { TabLinks } from "@/components/client/tab-links";
+import { LineChart } from "@/components/client/line-chart";
 import { getClientDashboard } from "@/lib/client-queries";
 import { requireClient } from "@/lib/session";
 
-export default async function ProgressPage() {
+export default async function ProgressPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { client } = await requireClient();
+  const sp = await searchParams;
+  const tab = ["bodyfat", "photos", "measure"].includes(sp.tab ?? "") ? (sp.tab as string) : "weight";
   const data = await getClientDashboard(client.id);
-  const oldestFirst = [...data.checkins].reverse();
+  const checkins = data.checkins;
 
-  const latest = data.checkins[0];
-  const prev = data.checkins[1];
-  const delta = latest && prev ? latest.weight - prev.weight : null;
-  const first = oldestFirst[0];
-  const totalChange = latest && first && latest.id !== first.id ? latest.weight - first.weight : null;
+  const ordered = [...checkins].reverse();
+  const latest = checkins[0];
+  const first = checkins[checkins.length - 1];
 
-  const weights = data.checkins.map((w) => w.weight);
-  const min = weights.length ? Math.min(...weights) : 0;
-  const max = weights.length ? Math.max(...weights) : 0;
+  const weightDelta = latest && first && latest.id !== first.id ? latest.weight - first.weight : null;
+  const weightPct = latest && first && first.weight ? (weightDelta! / first.weight) * 100 : null;
+  const weightSeries = ordered.map((c) => c.weight);
+
+  const bfOrdered = ordered.filter((c) => c.bodyFatPercent != null);
+  const bfLatest = checkins.find((c) => c.bodyFatPercent != null);
+  const bfFirst = [...checkins].reverse().find((c) => c.bodyFatPercent != null);
+  const bfDelta = bfLatest && bfFirst && bfLatest.id !== bfFirst.id ? (bfLatest.bodyFatPercent! - bfFirst.bodyFatPercent!) : null;
+
+  const latestWithMeasure = checkins.find((c) => c.measurementsJson && Object.keys(c.measurementsJson).length > 0);
+
+  if (checkins.length === 0) {
+    return (
+      <div className="space-y-5">
+        <h1 className="text-2xl font-semibold tracking-tight">Progress</h1>
+        <EmptyState
+          title="No data yet"
+          hint="Add your first check-in to start tracking."
+          action={
+            <Link href="/client/checkin" className={goldBtn}>
+              Add New Entry
+            </Link>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Progress</h1>
-        <p className="mt-1 text-sm text-zinc-500">Weigh-ins and check-in history</p>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Progress</h1>
 
-      <div className="grid grid-cols-3 gap-2.5">
-        <Stat
-          label="Current"
-          value={latest ? `${latest.weight}` : "—"}
-          sub={latest ? `kg · ${new Date(latest.createdAt).toLocaleDateString()}` : "No data"}
-          accent
-        />
-        <Stat
-          label="Last change"
-          value={delta != null ? `${delta > 0 ? "+" : ""}${delta.toFixed(1)}` : "—"}
-          sub={delta != null ? "kg vs previous" : "need 2 check-ins"}
-        />
-        <Stat
-          label="Overall"
-          value={totalChange != null ? `${totalChange > 0 ? "+" : ""}${totalChange.toFixed(1)}` : "—"}
-          sub={totalChange != null ? "kg since start" : `${data.checkins.length} check-ins`}
-        />
-      </div>
+      <TabLinks
+        activeKey={tab}
+        tabs={[
+          { key: "weight", label: "Weight" },
+          { key: "bodyfat", label: "Body Fat" },
+          { key: "photos", label: "Photos" },
+          { key: "measure", label: "Measure" },
+        ]}
+      />
 
-      <section aria-label="New check-in">
-        <SectionTitle title="New check-in" hint="Weight + optional measurements" />
-        <Card>
-          <ActionForm action={submitCheckinAction} submitLabel="Submit check-in">
-            <div className="grid grid-cols-2 gap-2">
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-zinc-500">Weight (kg) *</span>
-                <input name="weight" type="number" step="0.1" placeholder="e.g. 75.5" required min={20} max={500} className={inputCls} />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-zinc-500">Body fat %</span>
-                <input name="bodyFatPercent" type="number" step="0.1" placeholder="Optional" min={1} max={80} className={inputCls} />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-zinc-500">Chest</span>
-                <input name="chest" placeholder="Optional" maxLength={20} className={inputCls} />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-zinc-500">Waist</span>
-                <input name="waist" placeholder="Optional" maxLength={20} className={inputCls} />
-              </label>
-              <label className="col-span-2 block">
-                <span className="mb-1 block text-xs font-medium text-zinc-500">Hips</span>
-                <input name="hips" placeholder="Optional" maxLength={20} className={inputCls} />
-              </label>
+      {tab === "weight" ? (
+        <>
+          <CCard>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-3xl font-semibold tracking-tight">{latest?.weight} kg</p>
+                {weightDelta != null ? (
+                  <p className={`mt-1 text-sm font-medium ${weightDelta <= 0 ? "text-emerald-400" : "text-amber-400"}`}>
+                    {weightDelta <= 0 ? "↓" : "↑"} {Math.abs(weightDelta).toFixed(1)} kg
+                    {weightPct != null ? ` (${Math.abs(weightPct).toFixed(1)}%)` : ""}
+                  </p>
+                ) : null}
+              </div>
+              <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">All time</span>
             </div>
-            <textarea name="notes" placeholder="How are you feeling? Sleep, energy, soreness… (optional)" maxLength={2000} rows={3} className={inputCls} />
-          </ActionForm>
-          <p className="mt-2 text-xs text-zinc-400">Photo upload is not part of this MVP — weight, measurements and notes only.</p>
-        </Card>
-      </section>
-
-      <section aria-label="Trend">
-        <SectionTitle
-          title="Trend"
-          hint={data.checkins.length > 1 ? `${min.toFixed(1)} – ${max.toFixed(1)} kg range` : undefined}
-        />
-        <Card>
-          {oldestFirst.length === 0 ? (
-            <div className="py-2 text-center">
-              <p className="font-medium">No check-ins yet</p>
-              <p className="mt-1 text-sm text-zinc-500">Your history and chart will appear here.</p>
+            <div className="mt-4">
+              <LineChart values={weightSeries} className="h-40 w-full" />
             </div>
+            <div className="mt-2 flex justify-between text-xs text-zinc-500">
+              <span>{first ? new Date(first.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</span>
+              <span>{latest ? new Date(latest.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</span>
+            </div>
+          </CCard>
+
+          <div className="grid grid-cols-2 gap-3">
+            <StatTile
+              label="Body Fat"
+              value={latest?.bodyFatPercent != null ? `${latest.bodyFatPercent}%` : "—"}
+              delta={bfDelta != null ? `${bfDelta <= 0 ? "↓" : "↑"} ${Math.abs(bfDelta).toFixed(1)}%` : undefined}
+              positive={bfDelta != null && bfDelta <= 0}
+            />
+            <StatTile
+              label="Muscle Mass"
+              value={latest?.muscleMass != null ? `${latest.muscleMass} kg` : "—"}
+            />
+            <StatTile label="Chest" value={latestWithMeasure?.measurementsJson?.chest ?? "—"} />
+            <StatTile label="Waist" value={latestWithMeasure?.measurementsJson?.waist ?? "—"} />
+          </div>
+        </>
+      ) : null}
+
+      {tab === "bodyfat" ? (
+        <CCard>
+          <p className="text-3xl font-semibold tracking-tight">{bfLatest?.bodyFatPercent != null ? `${bfLatest.bodyFatPercent}%` : "—"}</p>
+          {bfDelta != null ? (
+            <p className={`mt-1 text-sm font-medium ${bfDelta <= 0 ? "text-emerald-400" : "text-amber-400"}`}>
+              {bfDelta <= 0 ? "↓" : "↑"} {Math.abs(bfDelta).toFixed(1)}%
+            </p>
+          ) : null}
+          <div className="mt-4">
+            <LineChart values={bfOrdered.map((c) => c.bodyFatPercent!)} className="h-40 w-full" />
+          </div>
+        </CCard>
+      ) : null}
+
+      {tab === "photos" ? (
+        <EmptyState title="Photos coming soon" hint="Progress photo uploads aren't part of this MVP yet." />
+      ) : null}
+
+      {tab === "measure" ? (
+        <CCard>
+          <p className="text-sm font-semibold text-zinc-100">Latest measurements</p>
+          {latestWithMeasure?.measurementsJson ? (
+            <ul className="mt-3 divide-y divide-white/5">
+              {Object.entries(latestWithMeasure.measurementsJson).map(([k, v]) => (
+                <li key={k} className="flex items-center justify-between py-2.5 text-sm">
+                  <span className="capitalize text-zinc-400">{k}</span>
+                  <span className="font-medium text-zinc-100">{v}</span>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <>
-              <div className="flex items-end gap-1.5" aria-hidden>
-                {oldestFirst.slice(-14).map((c) => {
-                  const h = max === min ? 48 : 20 + ((c.weight - min) / (max - min)) * 72;
-                  const isLatest = latest && c.id === latest.id;
-                  return (
-                    <div key={c.id} className="flex w-full flex-col items-center gap-1">
-                      <div
-                        title={`${c.weight} kg`}
-                        className={`w-full rounded-t-md ${isLatest ? "bg-lime-700" : "bg-lime-600/70"}`}
-                        style={{ height: `${h}px` }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-2 flex justify-between text-xs text-zinc-400">
-                <span>{oldestFirst.slice(-14)[0] ? new Date(oldestFirst.slice(-14)[0].createdAt).toLocaleDateString() : ""}</span>
-                <span>{latest ? new Date(latest.createdAt).toLocaleDateString() : ""}</span>
-              </div>
-              <ul className="mt-4 space-y-1.5">
-                {data.checkins.map((c, idx) => {
-                  const next = data.checkins[idx + 1];
-                  const d = next ? c.weight - next.weight : null;
-                  return (
-                    <li key={c.id} className="rounded-xl bg-zinc-50 px-3 py-2.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-semibold">
-                          {c.weight} kg
-                          {c.bodyFatPercent ? <span className="ml-1.5 font-normal text-zinc-500">· {c.bodyFatPercent}%</span> : null}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          {d != null ? (
-                            <Badge tone={d < 0 ? "green" : d > 0 ? "amber" : "neutral"}>
-                              {d > 0 ? "+" : ""}{d.toFixed(1)} kg
-                            </Badge>
-                          ) : (
-                            <Badge>start</Badge>
-                          )}
-                          <span className="text-xs text-zinc-500">{new Date(c.createdAt).toLocaleDateString()}</span>
-                        </span>
-                      </div>
-                      {c.notes ? <p className="mt-1 text-xs text-zinc-500">{c.notes}</p> : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            </>
+            <p className="mt-3 text-sm text-zinc-500">No measurements recorded yet.</p>
           )}
-        </Card>
-      </section>
+        </CCard>
+      ) : null}
+
+      <Link href="/client/checkin" className={`${goldBtn} w-full`}>
+        Add New Entry
+      </Link>
     </div>
   );
 }
