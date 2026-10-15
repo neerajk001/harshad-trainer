@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  /* Repora is fully personalized (auth-gated DB pages), so use classic
+     dynamic rendering instead of Cache Components static prerendering. */
+  cacheComponents: false,
   turbopack: {
     rules: {
       "*.css": {

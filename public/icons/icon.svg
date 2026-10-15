@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#09090b"/>
+  <rect x="96" y="216" width="320" height="40" rx="20" fill="#65a30d"/>
+  <rect x="140" y="150" width="40" height="212" rx="20" fill="#65a30d"/>
+  <rect x="332" y="150" width="40" height="212" rx="20" fill="#65a30d"/>
+  <text x="256" y="442" text-anchor="middle" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#ffffff" letter-spacing="6">REPORA</text>
+</svg>
