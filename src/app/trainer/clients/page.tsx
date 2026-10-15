@@ -5,9 +5,8 @@ import { CreatePanel } from "@/components/create-panel";
 import { Badge, CCard, EmptyState, cInput, goldBtn } from "@/components/client/ui";
 import { TabLinks } from "@/components/client/tab-links";
 import { addClientAction } from "@/actions/trainer";
-import { getTrainerClientsMeta, getUnassignedClients } from "@/lib/coach-queries";
+import { getTrainerClientsMeta } from "@/lib/coach-queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 import { goalLabel } from "@/lib/client-utils";
 
 export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ tab?: string; q?: string }> }) {
@@ -16,9 +15,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
   const tab = ["active", "atrisk"].includes(sp.tab ?? "") ? (sp.tab as string) : "all";
   const q = (sp.q ?? "").trim().toLowerCase();
 
-  const hasDb = Boolean(process.env.DATABASE_URL) || isDemoMode();
-  const data = hasDb ? await getTrainerClientsMeta(user.id) : { rows: [], counts: { all: 0, active: 0, atRisk: 0 } };
-  const unassigned = hasDb ? await getUnassignedClients() : [];
+  const data = process.env.DATABASE_URL ? await getTrainerClientsMeta(user.id) : { rows: [], counts: { all: 0, active: 0, atRisk: 0 } };
 
   let rows = data.rows;
   if (tab === "active") rows = rows.filter((r) => !r.meta.atRisk && r.client.status === "active");
@@ -32,9 +29,14 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           <h1 className="text-2xl font-semibold tracking-tight">Clients</h1>
           <p className="mt-1 text-sm text-zinc-500">Manage all your clients.</p>
         </div>
-        <a href="#add-client" className={`${goldBtn} !px-4 !py-2.5 text-sm`}>
-          + Add Client
-        </a>
+        <div className="flex items-center gap-2">
+          <Link href="/trainer/inquiries" className="rounded-2xl border border-gold/40 px-4 py-2.5 text-sm font-medium text-gold hover:bg-gold/10">
+            Inquiries
+          </Link>
+          <a href="#add-client" className={`${goldBtn} !px-4 !py-2.5 text-sm`}>
+            + Add Client
+          </a>
+        </div>
       </div>
 
       <TabLinks
@@ -50,16 +52,6 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         <input type="hidden" name="tab" value={tab} />
         <input name="q" defaultValue={sp.q ?? ""} placeholder="Search clients…" aria-label="Search clients" className={cInput} />
       </form>
-
-      {unassigned.length > 0 ? (
-        <CCard className="border-gold/30 bg-gold/5">
-          <p className="text-sm font-semibold text-gold">{unassigned.length} new signup{unassigned.length === 1 ? "" : "s"} waiting</p>
-          <p className="mt-1 text-xs text-zinc-400">Self-registered clients with no coach yet.</p>
-          <Link href="/trainer/clients/unassigned" className="mt-2 inline-block text-xs font-semibold text-gold">
-            Review &amp; assign →
-          </Link>
-        </CCard>
-      ) : null}
 
       <div className="space-y-2.5">
         {rows.length === 0 ? (

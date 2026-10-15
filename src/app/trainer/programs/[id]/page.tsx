@@ -11,12 +11,11 @@ import {
 } from "@/actions/trainer";
 import { getTrainerPrograms } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 
 export default async function ProgramBuilderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireTrainer();
-  const programs = process.env.DATABASE_URL || isDemoMode() ? await getTrainerPrograms(user.id) : [];
+  const programs = process.env.DATABASE_URL ? await getTrainerPrograms(user.id) : [];
   const p = programs.find((x) => x.id === id);
   if (!p) {
     return (

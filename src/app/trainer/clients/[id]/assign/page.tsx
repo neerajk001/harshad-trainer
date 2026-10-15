@@ -5,14 +5,13 @@ import { CCard, EmptyState, cInput, goldBtn } from "@/components/client/ui";
 import { assignPlansAction, unassignDietAction, unassignWorkoutAction } from "@/actions/trainer";
 import { getClientDetail, getTrainerDietPlans, getTrainerPrograms } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default async function AssignPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireTrainer();
-  const detail = process.env.DATABASE_URL || isDemoMode() ? await getClientDetail(user.id, id) : null;
+  const detail = process.env.DATABASE_URL ? await getClientDetail(user.id, id) : null;
   if (!detail) {
     return (
       <div className="space-y-5">

@@ -45,7 +45,7 @@ export function Landing({ dashboardHref }: { dashboardHref?: string }) {
           </p>
 
           <Link
-            href={dashboardHref ?? "/signup"}
+            href={dashboardHref ?? "/inquiry"}
             className="mt-7 inline-flex items-center justify-center gap-2 rounded-2xl bg-gold px-6 py-4 text-base font-semibold text-zinc-950 transition hover:brightness-95 active:scale-[0.99]"
           >
             {loggedIn ? "Go to Dashboard" : "Start Your Transformation"}

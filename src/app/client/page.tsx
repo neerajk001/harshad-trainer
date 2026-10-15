@@ -3,7 +3,6 @@ import Link from "next/link";
 import { CCard, EmptyState, MacroBar, Ring, SectionTitle } from "@/components/client/ui";
 import { getClientDashboard } from "@/lib/client-queries";
 import { requireClient } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 import {
   fmtDelta,
   isToday,
@@ -23,7 +22,7 @@ function greeting() {
 
 export default async function ClientHome() {
   const { user, client } = await requireClient();
-  if (!process.env.DATABASE_URL && !isDemoMode()) {
+  if (!process.env.DATABASE_URL) {
     return <EmptyState title="Database not configured" hint="Ask your trainer/admin to configure the database." />;
   }
   const data = await getClientDashboard(client.id);

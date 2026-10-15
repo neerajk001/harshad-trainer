@@ -1,8 +1,9 @@
-import { and, desc, eq, gte, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, gte, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
   clients,
+  inquiries,
   messages,
   progressCheckins,
   users,
@@ -10,7 +11,6 @@ import {
   workoutLogs,
   workoutPrograms,
 } from "@/db/schema";
-import { getDemoClients, getDemoOverview, isDemoMode } from "@/lib/demo";
 
 const DAY = 86_400_000;
 
@@ -23,19 +23,6 @@ async function trainerClientRows(trainerId: string) {
 }
 
 export async function getTrainerDashboard(trainerId: string) {
-  if (isDemoMode()) {
-    const o = getDemoOverview(trainerId);
-    return {
-      totalClients: o.totalClients,
-      activeClients: o.activeClients,
-      checkinsThisWeek: o.recentCheckins.length,
-      needingAttention: o.needingAttention,
-      pendingCheckins: [],
-      unassignedCount: 0,
-      progressSeries: [] as Array<{ name: string; points: Array<{ date: Date; weight: number; bodyFat: number | null }> }>,
-      clientRows: o.clientRows,
-    };
-  }
   const rows = await trainerClientRows(trainerId);
   const clientIds = rows.map((r) => r.client.id);
   const since30 = new Date(Date.now() - 30 * DAY);
@@ -82,7 +69,7 @@ export async function getTrainerDashboard(trainerId: string) {
       .map((c) => ({ date: c.createdAt, weight: c.weight, bodyFat: c.bodyFatPercent })),
   }));
 
-  const unassigned = await db.select({ id: clients.id }).from(clients).where(isNull(clients.trainerId));
+  const newInquiries = await db.select({ id: inquiries.id }).from(inquiries).where(eq(inquiries.status, "new"));
 
   return {
     totalClients: rows.length,
@@ -90,26 +77,17 @@ export async function getTrainerDashboard(trainerId: string) {
     checkinsThisWeek,
     needingAttention,
     pendingCheckins,
-    unassignedCount: unassigned.length,
+    newInquiries: newInquiries.length,
     progressSeries,
     clientRows: rows,
   };
 }
 
-export async function getUnassignedClients() {
-  if (isDemoMode()) return [];
-  return db
-    .select({ client: clients, user: users })
-    .from(clients)
-    .innerJoin(users, eq(users.id, clients.userId))
-    .where(isNull(clients.trainerId));
+export async function getInquiries() {
+  return db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
 }
 
 export async function getTrainerClientsMeta(trainerId: string) {
-  if (isDemoMode()) {
-    const rows = getDemoClients(trainerId);
-    return { rows: rows.map((r) => ({ ...r, meta: { atRisk: false, programName: null, durationWeeks: null, latestWeight: null } })), counts: { all: rows.length, active: rows.length, atRisk: 0 } };
-  }
   const rows = await trainerClientRows(trainerId);
   const clientIds = rows.map((r) => r.client.id);
   const since7 = new Date(Date.now() - 7 * DAY);
@@ -167,7 +145,6 @@ export async function getClientProgressData(trainerId: string, clientId: string)
 }
 
 export async function getTrainerCheckins(trainerId: string, status?: "pending" | "reviewed") {
-  if (isDemoMode()) return [];
   const rows = await trainerClientRows(trainerId);
   const clientIds = rows.map((r) => r.client.id);
   if (clientIds.length === 0) return [];
@@ -184,7 +161,6 @@ export async function getTrainerCheckins(trainerId: string, status?: "pending" |
 }
 
 export async function getCheckinDetail(trainerId: string, checkinId: string) {
-  if (isDemoMode()) return null;
   const rows = await db
     .select({ checkin: progressCheckins, client: clients, user: users })
     .from(progressCheckins)
@@ -198,10 +174,6 @@ export async function getCheckinDetail(trainerId: string, checkinId: string) {
 }
 
 export async function getConversations(trainerId: string) {
-  if (isDemoMode()) {
-    const rows = getDemoClients(trainerId);
-    return rows.map((r) => ({ client: r.client, user: r.user, lastMessage: null as null | { body: string; createdAt: Date; senderRole: string }, unread: 0 }));
-  }
   const rows = await trainerClientRows(trainerId);
   const clientIds = rows.map((r) => r.client.id);
   const msgs = clientIds.length
@@ -221,7 +193,6 @@ export async function getConversations(trainerId: string) {
 }
 
 export async function getThread(trainerId: string, clientId: string) {
-  if (isDemoMode()) return null;
   const crow = await db.select().from(clients).where(eq(clients.id, clientId)).limit(1);
   if (!crow[0] || crow[0].trainerId !== trainerId) return null;
   const urow = await db.select().from(users).where(eq(users.id, crow[0].userId)).limit(1);
@@ -233,7 +204,6 @@ export async function getThread(trainerId: string, clientId: string) {
 /** Client-side inbox: the single thread with their trainer. */
 export async function getClientThread(clientId: string, trainerId: string | null) {
   if (!trainerId) return { messages: [], trainer: null };
-  if (isDemoMode()) return { messages: [], trainer: null };
   const trow = await db.select().from(users).where(eq(users.id, trainerId)).limit(1);
   const msgs = await db.select().from(messages).where(eq(messages.clientId, clientId)).orderBy(messages.createdAt);
   return { messages: msgs, trainer: trow[0] ?? null };

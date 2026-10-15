@@ -10,7 +10,7 @@ export async function proxy(request: Request) {
     pathname === "/" ||
     pathname === "/welcome" ||
     pathname === "/login" ||
-    pathname === "/signup" ||
+    pathname === "/inquiry" ||
     pathname.startsWith("/api/auth") ||
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
@@ -24,12 +24,12 @@ export async function proxy(request: Request) {
     return NextResponse.redirect(url);
   }
 
-  if (session?.user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
+  if (session?.user && (pathname === "/" || pathname === "/login" || pathname === "/inquiry")) {
     url.pathname = session.user.role === "trainer" ? "/trainer" : "/client";
     return NextResponse.redirect(url);
   }
 
-  if (session?.user?.role === "trainer" && (pathname.startsWith("/client") || pathname.startsWith("/onboarding"))) {
+  if (session?.user?.role === "trainer" && pathname.startsWith("/client")) {
     url.pathname = "/trainer";
     return NextResponse.redirect(url);
   }

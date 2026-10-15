@@ -16,14 +16,6 @@ import {
   workoutLogs,
   workoutPrograms,
 } from "@/db/schema";
-import {
-  getDemoClientDetail,
-  getDemoClients,
-  getDemoDietPlans,
-  getDemoOverview,
-  getDemoPrograms,
-  isDemoMode,
-} from "@/lib/demo";
 
 /** Escape LIKE wildcards so a search for "%" or "_" matches literally. */
 function escapeLike(s: string) {
@@ -31,7 +23,6 @@ function escapeLike(s: string) {
 }
 
 export async function getTrainerClients(trainerId: string, search?: string) {
-  if (isDemoMode()) return getDemoClients(trainerId, search);
   const q = search?.trim();
   const rows = await db
     .select({ client: clients, user: users })
@@ -49,7 +40,6 @@ export async function getTrainerClients(trainerId: string, search?: string) {
 }
 
 export async function getTrainerOverview(trainerId: string) {
-  if (isDemoMode()) return getDemoOverview(trainerId);
   const clientRows = await db
     .select({ client: clients, user: users })
     .from(clients)
@@ -98,7 +88,6 @@ export async function getTrainerOverview(trainerId: string) {
 }
 
 export async function getClientDetail(trainerId: string, clientId: string) {
-  if (isDemoMode()) return getDemoClientDetail(trainerId, clientId);
   const cRows = await db.select().from(clients).where(eq(clients.id, clientId)).limit(1);
   const client = cRows[0];
   if (!client || client.trainerId !== trainerId) return null;
@@ -127,7 +116,6 @@ export async function getClientDetail(trainerId: string, clientId: string) {
 }
 
 export async function getTrainerPrograms(trainerId: string) {
-  if (isDemoMode()) return getDemoPrograms(trainerId);
   const programs = await db
     .select()
     .from(workoutPrograms)
@@ -151,7 +139,6 @@ export async function getTrainerPrograms(trainerId: string) {
 }
 
 export async function getTrainerDietPlans(trainerId: string) {
-  if (isDemoMode()) return getDemoDietPlans(trainerId);
   const plans = await db
     .select()
     .from(dietPlans)

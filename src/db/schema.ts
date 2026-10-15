@@ -40,7 +40,7 @@ export const clients = pgTable("clients", {
   currentWeightKg: real("current_weight_kg"),
   targetWeightKg: real("target_weight_kg"),
   activityLevel: text("activity_level"),
-  onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
+  onboardingCompleted: boolean("onboarding_completed").notNull().default(true),
   createdAt: createdAt(),
 });
 
@@ -239,6 +239,21 @@ export const foods = pgTable("foods", {
   isPopular: boolean("is_popular").notNull().default(false),
 });
 
+// Public "request access" inquiries. A coach reviews these and approves one to
+// create a client account (only coach-permitted people can sign in).
+export const inquiries = pgTable("inquiries", {
+  id: id(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  goal: text("goal"),
+  message: text("message"),
+  status: text("status").notNull().default("new"),
+  createdAt: createdAt(),
+  handledAt: timestamp("handled_at", { withTimezone: true }),
+});
+
 export type User = typeof users.$inferSelect;
 export type Client = typeof clients.$inferSelect;
 export type Food = typeof foods.$inferSelect;
+export type Inquiry = typeof inquiries.$inferSelect;

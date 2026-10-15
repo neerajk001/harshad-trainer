@@ -15,7 +15,6 @@ import {
   workoutLogs,
 } from "@/db/schema";
 import { requireClient } from "@/lib/session";
-import { demoOk, isDemoMode } from "@/lib/demo";
 import { checkinSchema, exerciseLogSchema, mealLogSchema, workoutLogSchema } from "@/lib/validations";
 
 function fail(message: string) {
@@ -24,7 +23,6 @@ function fail(message: string) {
 
 export async function logWorkoutAction(formData: FormData) {
   const { client } = await requireClient();
-  if (isDemoMode()) return demoOk();
   const parsed = workoutLogSchema.safeParse({
     assignmentId: formData.get("assignmentId") || undefined,
     workoutDayId: formData.get("workoutDayId") || undefined,
@@ -60,7 +58,6 @@ export async function logWorkoutAction(formData: FormData) {
 
 export async function logExerciseAction(formData: FormData) {
   const { client } = await requireClient();
-  if (isDemoMode()) return demoOk();
   let sets: unknown = [];
   try {
     sets = JSON.parse(String(formData.get("sets") ?? "[]"));
@@ -118,7 +115,6 @@ export async function logExerciseAction(formData: FormData) {
 
 export async function logMealAction(formData: FormData) {
   const { client } = await requireClient();
-  if (isDemoMode()) return demoOk();
   const parsed = mealLogSchema.safeParse({
     foodName: formData.get("foodName"),
     quantity: formData.get("quantity") || undefined,
@@ -146,7 +142,6 @@ export async function logMealAction(formData: FormData) {
 
 export async function logFoodAction(formData: FormData) {
   const { client } = await requireClient();
-  if (isDemoMode()) return demoOk();
   const foodId = String(formData.get("foodId") ?? "");
   if (!foodId) return fail("Pick a food");
   const mealTypeRaw = String(formData.get("mealType") ?? "");
@@ -170,7 +165,6 @@ export async function logFoodAction(formData: FormData) {
 
 export async function submitCheckinAction(formData: FormData) {
   const { client } = await requireClient();
-  if (isDemoMode()) return demoOk();
   const parsed = checkinSchema.safeParse({
     weight: formData.get("weight"),
     bodyFatPercent: formData.get("bodyFatPercent") || undefined,

@@ -16,25 +16,12 @@ export const addClientSchema = z.object({
   phone: z.string().trim().max(40).optional(),
 });
 
-export const registerSchema = z.object({
+export const inquirySchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(120),
   email: emailSchema,
-  password: passwordSchema,
-});
-
-export const onboardingGoalSchema = z.object({
-  goal: z.enum(["lose_fat", "build_muscle", "get_stronger", "general_fitness"], {
-    message: "Pick a goal",
-  }),
-});
-
-export const onboardingDetailsSchema = z.object({
-  gender: z.enum(["male", "female"]),
-  age: z.coerce.number().int().min(13).max(100),
-  heightCm: z.coerce.number().int().min(90).max(250),
-  currentWeightKg: z.coerce.number().min(30).max(400),
-  targetWeightKg: z.coerce.number().min(30).max(400),
-  activityLevel: z.enum(["sedentary", "moderate", "active"]),
+  phone: z.string().trim().max(40).optional(),
+  goal: z.string().trim().max(120).optional(),
+  message: z.string().trim().max(2000).optional(),
 });
 
 export const exerciseLogSchema = z.object({

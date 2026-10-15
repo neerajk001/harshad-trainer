@@ -18,17 +18,8 @@ import {
   workoutLogs,
   workoutPrograms,
 } from "@/db/schema";
-import {
-  demoClientForUser,
-  getDemoDashboard,
-  getDemoExerciseHistory,
-  getDemoFoodCatalog,
-  getDemoProfile,
-  isDemoMode,
-} from "@/lib/demo";
 
 export async function getClientDashboard(clientId: string) {
-  if (isDemoMode()) return getDemoDashboard(clientId);
   const wAssign = await db
     .select({ assignment: workoutAssignments, program: workoutPrograms })
     .from(workoutAssignments)
@@ -102,7 +93,6 @@ export async function getClientDashboard(clientId: string) {
 }
 
 export async function getClientProfile(userId: string) {
-  if (isDemoMode()) return getDemoProfile(userId);
   const cRows = await db.select().from(clients).where(eq(clients.userId, userId)).limit(1);
   const uRows = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!cRows[0]) return null;
@@ -112,28 +102,20 @@ export async function getClientProfile(userId: string) {
   return { client: cRows[0], user: uRows[0], trainer: tRows[0] };
 }
 
-export async function getClientRecord(userId: string) {
-  if (isDemoMode()) return demoClientForUser(userId);
-  const rows = await db.select().from(clients).where(eq(clients.userId, userId)).limit(1);
-  return rows[0] ?? null;
-}
-
 export async function getWorkoutDayData(clientId: string, dayId: string) {
   const data = await getClientDashboard(clientId);
   const day = data.workoutDaysWithEx.find((d) => d.id === dayId) ?? null;
   if (!day) return null;
-  const loggedExerciseIds = isDemoMode()
-    ? []
-    : Array.from(
-        new Set(
-          (
-            await db
-              .select({ exerciseId: exerciseSetLogs.exerciseId })
-              .from(exerciseSetLogs)
-              .where(and(eq(exerciseSetLogs.clientId, clientId), eq(exerciseSetLogs.workoutDayId, dayId)))
-          ).map((r) => r.exerciseId),
-        ),
-      );
+  const loggedExerciseIds = Array.from(
+    new Set(
+      (
+        await db
+          .select({ exerciseId: exerciseSetLogs.exerciseId })
+          .from(exerciseSetLogs)
+          .where(and(eq(exerciseSetLogs.clientId, clientId), eq(exerciseSetLogs.workoutDayId, dayId)))
+      ).map((r) => r.exerciseId),
+    ),
+  );
   const completed = data.completedDayIds.includes(dayId);
   return { day, program: data.wAssign?.program ?? null, assignment: data.wAssign?.assignment ?? null, completed, loggedExerciseIds };
 }
@@ -150,19 +132,16 @@ export async function getExerciseData(clientId: string, exerciseId: string) {
       break;
     }
   }
-  const history = isDemoMode()
-    ? getDemoExerciseHistory(clientId, exerciseId)
-    : await db
-        .select()
-        .from(exerciseSetLogs)
-        .where(and(eq(exerciseSetLogs.clientId, clientId), eq(exerciseSetLogs.exerciseId, exerciseId)))
-        .orderBy(desc(exerciseSetLogs.loggedAt))
-        .limit(60);
+  const history = await db
+    .select()
+    .from(exerciseSetLogs)
+    .where(and(eq(exerciseSetLogs.clientId, clientId), eq(exerciseSetLogs.exerciseId, exerciseId)))
+    .orderBy(desc(exerciseSetLogs.loggedAt))
+    .limit(60);
   return { exercise, day, history, program: data.wAssign?.program ?? null };
 }
 
 export async function getFoodCatalog(clientId: string, search?: string) {
-  if (isDemoMode()) return getDemoFoodCatalog(clientId, search);
   const q = (search ?? "").trim();
   const results = q
     ? await db.select().from(foods).where(ilike(foods.name, `%${q}%`)).limit(30)

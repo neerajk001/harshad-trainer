@@ -5,7 +5,6 @@ import { TabLinks } from "@/components/client/tab-links";
 import { LineChart } from "@/components/client/line-chart";
 import { getClientDetail, getTrainerDietPlans, getTrainerPrograms } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 import { goalLabel } from "@/lib/client-utils";
 
 export default async function ClientDetailPage({
@@ -19,7 +18,7 @@ export default async function ClientDetailPage({
   const sp = await searchParams;
   const tab = ["progress", "workouts", "diet"].includes(sp.tab ?? "") ? (sp.tab as string) : "overview";
   const user = await requireTrainer();
-  const detail = process.env.DATABASE_URL || isDemoMode() ? await getClientDetail(user.id, id) : null;
+  const detail = process.env.DATABASE_URL ? await getClientDetail(user.id, id) : null;
   if (!detail) {
     return (
       <div className="space-y-5">

@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { clients, messages } from "@/db/schema";
 import { getSessionUser } from "@/lib/session";
-import { demoOk, isDemoMode } from "@/lib/demo";
 import { messageSchema } from "@/lib/validations";
 
 function fail(message: string) {
@@ -16,7 +15,6 @@ function fail(message: string) {
 export async function sendMessageAction(formData: FormData) {
   const user = await getSessionUser();
   if (!user) return fail("Not signed in");
-  if (isDemoMode()) return demoOk();
   const parsed = messageSchema.safeParse({ clientId: formData.get("clientId"), body: formData.get("body") });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
 
@@ -53,7 +51,7 @@ export async function sendMessageAction(formData: FormData) {
 
 export async function markThreadReadAction(clientId: string) {
   const user = await getSessionUser();
-  if (!user || isDemoMode()) return { ok: true as const };
+  if (!user) return { ok: true as const };
   const theirRole = user.role === "trainer" ? "client" : "trainer";
   const crow = await db.select().from(clients).where(eq(clients.id, clientId)).limit(1);
   if (!crow[0]) return fail("Not found");

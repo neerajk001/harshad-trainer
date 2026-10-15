@@ -5,7 +5,6 @@ import Credentials from "next-auth/providers/credentials";
 
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { checkDemoCredentials } from "@/lib/demo";
 import { loginSchema } from "@/lib/validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -23,11 +22,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const parsed = loginSchema.safeParse(raw);
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
-
-        // DEMO_MODE: sign in with demo JSON accounts, no database needed.
-        if (process.env.DEMO_MODE === "true") {
-          return checkDemoCredentials(email, password);
-        }
         if (!process.env.DATABASE_URL) return null;
         const rows = await db
           .select()

@@ -10,6 +10,15 @@ export function goalLabel(goal?: string | null) {
   return GOAL_LABELS[goal] ?? goal;
 }
 
+export function goalOptions() {
+  return [
+    { key: "lose_fat", label: "Lose Fat" },
+    { key: "build_muscle", label: "Build Muscle" },
+    { key: "get_stronger", label: "Get Stronger" },
+    { key: "general_fitness", label: "General Fitness" },
+  ];
+}
+
 export const MEAL_TYPES: Array<{ key: string; label: string }> = [
   { key: "breakfast", label: "Breakfast" },
   { key: "lunch", label: "Lunch" },

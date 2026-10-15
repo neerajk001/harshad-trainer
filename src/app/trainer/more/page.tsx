@@ -10,6 +10,7 @@ export default async function MorePage() {
 
   const rows = [
     { label: "Business Profile", href: "/trainer/settings", tint: "#f5c518" },
+    { label: "Inquiries", href: "/trainer/inquiries", tint: "#60a5fa" },
     { label: "Exercise Library", href: "/trainer/programs", tint: "#f97316" },
     { label: "Food Database", href: "/trainer/diet-plans", tint: "#f472b6" },
   ];

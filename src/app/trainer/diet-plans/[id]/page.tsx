@@ -11,12 +11,11 @@ import {
 } from "@/actions/trainer";
 import { getTrainerDietPlans } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 
 export default async function DietBuilderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireTrainer();
-  const plans = process.env.DATABASE_URL || isDemoMode() ? await getTrainerDietPlans(user.id) : [];
+  const plans = process.env.DATABASE_URL ? await getTrainerDietPlans(user.id) : [];
   const p = plans.find((x) => x.id === id);
   if (!p) {
     return (

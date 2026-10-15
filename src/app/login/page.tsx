@@ -35,17 +35,6 @@ function LoginInner() {
     }
   }
 
-  function fillDemo(role: "trainer" | "client") {
-    if (role === "trainer") {
-      setEmail("trainer@repora.demo");
-      setPassword("Trainer123!");
-    } else {
-      setEmail("client@repora.demo");
-      setPassword("Client123!");
-    }
-    setError(null);
-  }
-
   return (
     <div className="flex min-h-dvh items-center justify-center bg-ink px-5 py-10 [color-scheme:dark]">
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900/70 p-7 text-zinc-100">
@@ -80,35 +69,8 @@ function LoginInner() {
         </form>
 
         <p className="mt-5 text-center text-sm text-zinc-400">
-          New here? <Link href="/signup" className="font-semibold text-gold">Create an account</Link>
+          New here? <Link href="/inquiry" className="font-semibold text-gold">Request access</Link>
         </p>
-
-        <div className="mt-6 rounded-2xl bg-white/5 p-4 text-xs leading-relaxed text-zinc-400">
-          <p className="font-semibold text-zinc-200">Demo accounts</p>
-          <p className="mt-1">Trainer: trainer@repora.demo / Trainer123!</p>
-          <p>Client: client@repora.demo / Client123!</p>
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => fillDemo("trainer")}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-medium text-zinc-200 hover:bg-white/10"
-            >
-              Fill trainer
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("client")}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-medium text-zinc-200 hover:bg-white/10"
-            >
-              Fill client
-            </button>
-          </div>
-          {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
-            <p className="mt-2 text-gold">Demo mode is on — sign in instantly, no database needed. Edits won&apos;t persist.</p>
-          ) : (
-            <p className="mt-2">Run `npm run db:seed` after setting DATABASE_URL. See README.</p>
-          )}
-        </div>
       </div>
     </div>
   );

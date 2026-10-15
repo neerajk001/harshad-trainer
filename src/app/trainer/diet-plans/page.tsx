@@ -6,11 +6,10 @@ import { CCard, EmptyState, cInput } from "@/components/client/ui";
 import { createDietPlanAction, deleteDietPlanAction } from "@/actions/trainer";
 import { getTrainerDietPlans } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 
 export default async function DietPlansPage() {
   const user = await requireTrainer();
-  const plans = process.env.DATABASE_URL || isDemoMode() ? await getTrainerDietPlans(user.id) : [];
+  const plans = process.env.DATABASE_URL ? await getTrainerDietPlans(user.id) : [];
 
   return (
     <div className="space-y-5">

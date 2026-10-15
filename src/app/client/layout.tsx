@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
 
@@ -20,8 +19,7 @@ function GoldAvatar({ name }: { name?: string | null }) {
 }
 
 export default async function ClientLayout({ children }: { children: ReactNode }) {
-  const { user, client } = await requireClient();
-  if (!client.onboardingCompleted) redirect("/onboarding");
+  const { user } = await requireClient();
 
   return (
     <div className="min-h-dvh bg-ink text-zinc-100 [color-scheme:dark]">

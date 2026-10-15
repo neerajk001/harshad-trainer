@@ -4,7 +4,6 @@ import { CCard, EmptyState, SectionTitle, StatTile } from "@/components/client/u
 import { MultiLineChart } from "@/components/coach/multi-line-chart";
 import { getTrainerDashboard } from "@/lib/coach-queries";
 import { requireTrainer } from "@/lib/session";
-import { isDemoMode } from "@/lib/demo";
 
 function greeting() {
   const h = new Date().getHours();
@@ -15,8 +14,8 @@ function greeting() {
 
 export default async function CoachHome() {
   const user = await requireTrainer();
-  if (!process.env.DATABASE_URL && !isDemoMode()) {
-    return <EmptyState title="DATABASE_URL is not configured" hint="Set DATABASE_URL in .env.local, run migrations + seed. See README." />;
+  if (!process.env.DATABASE_URL) {
+    return <EmptyState title="DATABASE_URL is not configured" hint="Set DATABASE_URL in .env.local and run migrations. See README." />;
   }
   const data = await getTrainerDashboard(user.id);
   const first = user.name?.split(" ")[0] ?? "Coach";
@@ -71,14 +70,14 @@ export default async function CoachHome() {
       <section aria-label="Today's tasks">
         <SectionTitle title="Today's Tasks" />
         <div className="space-y-2.5">
+          {data.newInquiries > 0 ? (
+            <TaskRow href="/trainer/inquiries" tint="#60a5fa" title={`${data.newInquiries} new inquir${data.newInquiries === 1 ? "y" : "ies"} to review`} />
+          ) : null}
           <TaskRow
             href="/trainer/checkins"
             tint="#f5c518"
             title={`${data.pendingCheckins.length} pending check-in review${data.pendingCheckins.length === 1 ? "" : "s"}`}
           />
-          {data.unassignedCount > 0 ? (
-            <TaskRow href="/trainer/clients/unassigned" tint="#4ade80" title={`${data.unassignedCount} new client signup${data.unassignedCount === 1 ? "" : "s"} to assign`} />
-          ) : null}
           <TaskRow
             href="/trainer/clients"
             tint="#f97316"
