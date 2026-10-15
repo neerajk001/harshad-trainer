@@ -8,6 +8,7 @@ export async function proxy(request: Request) {
 
   const isPublic =
     pathname === "/" ||
+    pathname === "/welcome" ||
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname.startsWith("/api/auth") ||
