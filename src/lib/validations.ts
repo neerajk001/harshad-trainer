@@ -13,6 +13,7 @@ export const addClientSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   goal: z.string().trim().max(500).optional(),
+  phone: z.string().trim().max(40).optional(),
 });
 
 export const registerSchema = z.object({
@@ -54,6 +55,7 @@ export const programSchema = z.object({
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(2000).optional(),
   durationWeeks: z.coerce.number().int().min(1).max(52).default(4),
+  level: z.enum(["beginner", "intermediate", "advanced"]).default("intermediate"),
 });
 
 export const workoutDaySchema = z.object({
@@ -91,6 +93,7 @@ export const dietPlanSchema = z.object({
 export const dietMealSchema = z.object({
   planId: z.uuid(),
   name: z.string().trim().min(1).max(120),
+  time: z.string().trim().max(20).optional(),
 });
 
 export const foodItemSchema = z.object({
@@ -137,4 +140,33 @@ export const checkinSchema = z.object({
   waist: z.string().trim().max(20).optional(),
   hips: z.string().trim().max(20).optional(),
   notes: z.string().trim().max(2000).optional(),
+});
+
+export const progressEntrySchema = z.object({
+  clientId: z.uuid(),
+  weight: z.coerce.number().min(20).max(500),
+  bodyFatPercent: z.coerce.number().min(1).max(80).optional(),
+  muscleMass: z.coerce.number().min(1).max(300).optional(),
+  chest: z.string().trim().max(20).optional(),
+  waist: z.string().trim().max(20).optional(),
+  hips: z.string().trim().max(20).optional(),
+  notes: z.string().trim().max(2000).optional(),
+});
+
+export const reviewCheckinSchema = z.object({
+  checkinId: z.uuid(),
+  feedback: z.string().trim().max(2000).optional(),
+  approve: z.coerce.boolean().optional(),
+});
+
+export const messageSchema = z.object({
+  clientId: z.uuid(),
+  body: z.string().trim().min(1, "Write a message").max(2000),
+});
+
+export const assignPlansSchema = z.object({
+  clientId: z.uuid(),
+  programId: z.uuid().optional().or(z.literal("")),
+  planId: z.uuid().optional().or(z.literal("")),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
 });

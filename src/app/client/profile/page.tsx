@@ -19,6 +19,7 @@ export default async function ProfilePage() {
     { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null, tint: "#f97316", soon: false },
     { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null, tint: "#60a5fa", soon: false },
     { label: "Progress", value: "", href: "/client/progress", tint: "#4ade80", soon: false },
+    { label: "Messages", value: "", href: "/client/messages", tint: "#f5c518", soon: false },
     { label: "Measurements", value: "", href: "/client/progress?tab=measure", tint: "#f472b6", soon: false },
     { label: "Photos", value: "", href: null, tint: "#a78bfa", soon: true },
     { label: "Notifications", value: "", href: null, tint: "#facc15", soon: true },

@@ -33,6 +33,7 @@ export const clients = pgTable("clients", {
   trainerId: uuid("trainer_id").references(() => users.id, { onDelete: "set null" }),
   status: text("status").notNull().default("active"),
   goal: text("goal"),
+  phone: text("phone"),
   gender: text("gender"),
   age: integer("age"),
   heightCm: integer("height_cm"),
@@ -51,6 +52,7 @@ export const workoutPrograms = pgTable("workout_programs", {
   name: text("name").notNull(),
   description: text("description"),
   durationWeeks: integer("duration_weeks").notNull().default(4),
+  level: text("level").notNull().default("intermediate"),
   createdAt: createdAt(),
 });
 
@@ -144,6 +146,7 @@ export const dietMeals = pgTable("diet_meals", {
     .notNull()
     .references(() => dietPlans.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  time: text("time"),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -202,7 +205,27 @@ export const progressCheckins = pgTable("progress_checkins", {
   stressLevel: text("stress_level"),
   measurementsJson: jsonb("measurements_json").$type<Record<string, string> | null>(),
   notes: text("notes"),
+  status: text("status").notNull().default("pending"),
+  feedback: text("feedback"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
   createdAt: createdAt(),
+});
+
+export const messages = pgTable("messages", {
+  id: id(),
+  trainerId: uuid("trainer_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => clients.id, { onDelete: "cascade" }),
+  senderId: uuid("sender_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  senderRole: text("sender_role", { enum: ["trainer", "client"] }).notNull(),
+  body: text("body").notNull(),
+  createdAt: createdAt(),
+  readAt: timestamp("read_at", { withTimezone: true }),
 });
 
 export const foods = pgTable("foods", {

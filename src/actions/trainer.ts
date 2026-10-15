@@ -11,6 +11,7 @@ import {
   dietFoodItems,
   dietMeals,
   dietPlans,
+  progressCheckins,
   users,
   workoutAssignments,
   workoutDays,
@@ -22,12 +23,15 @@ import { isDemoMode } from "@/lib/demo";
 import {
   addClientSchema,
   assignDietSchema,
+  assignPlansSchema,
   assignWorkoutSchema,
   dietMealSchema,
   dietPlanSchema,
   exerciseSchema,
   foodItemSchema,
   programSchema,
+  progressEntrySchema,
+  reviewCheckinSchema,
   workoutDaySchema,
 } from "@/lib/validations";
 
@@ -70,6 +74,7 @@ export async function addClientAction(formData: FormData) {
     email: formData.get("email"),
     password: formData.get("password"),
     goal: formData.get("goal") || undefined,
+    phone: formData.get("phone") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   const email = parsed.data.email.toLowerCase().trim();
@@ -87,6 +92,7 @@ export async function addClientAction(formData: FormData) {
     trainerId: user.id,
     status: "active",
     goal: parsed.data.goal?.trim() || null,
+    phone: parsed.data.phone?.trim() || null,
     onboardingCompleted: true,
   });
   revalidatePath("/trainer/clients");
@@ -101,6 +107,7 @@ export async function createProgramAction(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     durationWeeks: formData.get("durationWeeks"),
+    level: formData.get("level") || undefined,
   });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   await db.insert(workoutPrograms).values({
@@ -108,6 +115,7 @@ export async function createProgramAction(formData: FormData) {
     name: parsed.data.name.trim(),
     description: parsed.data.description?.trim() || null,
     durationWeeks: parsed.data.durationWeeks,
+    level: parsed.data.level,
   });
   revalidatePath("/trainer/programs");
   return ok();
@@ -121,6 +129,7 @@ export async function updateProgramAction(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     durationWeeks: formData.get("durationWeeks"),
+    level: formData.get("level") || undefined,
   });
   if (!id || !parsed.success) return fail("Invalid input");
   await db
@@ -129,6 +138,7 @@ export async function updateProgramAction(formData: FormData) {
       name: parsed.data.name.trim(),
       description: parsed.data.description?.trim() || null,
       durationWeeks: parsed.data.durationWeeks,
+      level: parsed.data.level,
     })
     .where(and(eq(workoutPrograms.id, id), eq(workoutPrograms.trainerId, user.id)));
   revalidatePath("/trainer/programs");
@@ -343,7 +353,7 @@ export async function deleteDietPlanAction(formData: FormData) {
 export async function addDietMealAction(formData: FormData) {
   const user = await requireTrainer();
   if (isDemoMode()) return ok();
-  const parsed = dietMealSchema.safeParse({ planId: formData.get("planId"), name: formData.get("name") });
+  const parsed = dietMealSchema.safeParse({ planId: formData.get("planId"), name: formData.get("name"), time: formData.get("time") || undefined });
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
   const plan = await db
     .select({ id: dietPlans.id })
@@ -355,6 +365,7 @@ export async function addDietMealAction(formData: FormData) {
   await db.insert(dietMeals).values({
     dietPlanId: parsed.data.planId,
     name: parsed.data.name.trim(),
+    time: parsed.data.time?.trim() || null,
     sortOrder: existing.length,
   });
   revalidatePath("/trainer/diet-plans");
@@ -473,5 +484,117 @@ export async function setClientStatusAction(formData: FormData) {
   await db.update(clients).set({ status }).where(eq(clients.id, clientId));
   revalidatePath("/trainer/clients");
   revalidatePath(`/trainer/clients/${clientId}`);
+  return ok();
+}
+
+export async function reviewCheckinAction(formData: FormData) {
+  const user = await requireTrainer();
+  if (isDemoMode()) return ok();
+  const parsed = reviewCheckinSchema.safeParse({
+    checkinId: formData.get("checkinId"),
+    feedback: formData.get("feedback") || undefined,
+    approve: formData.get("approve") || undefined,
+  });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+  const row = await db.select().from(progressCheckins).where(eq(progressCheckins.id, parsed.data.checkinId)).limit(1);
+  if (!row[0]) return fail("Check-in not found");
+  const crow = await db.select().from(clients).where(eq(clients.id, row[0].clientId)).limit(1);
+  if (!crow[0] || crow[0].trainerId !== user.id) return fail("Not authorized");
+  const feedback = parsed.data.feedback?.trim();
+  await db
+    .update(progressCheckins)
+    .set({
+      status: parsed.data.approve ? "approved" : "reviewed",
+      feedback: feedback || row[0].feedback,
+      reviewedAt: new Date(),
+    })
+    .where(eq(progressCheckins.id, parsed.data.checkinId));
+  revalidatePath("/trainer/checkins");
+  revalidatePath(`/trainer/checkins/${parsed.data.checkinId}`);
+  revalidatePath(`/trainer/clients/${row[0].clientId}`);
+  return ok();
+}
+
+export async function addProgressEntryAction(formData: FormData) {
+  const user = await requireTrainer();
+  if (isDemoMode()) return ok();
+  const parsed = progressEntrySchema.safeParse({
+    clientId: formData.get("clientId"),
+    weight: formData.get("weight"),
+    bodyFatPercent: formData.get("bodyFatPercent") || undefined,
+    muscleMass: formData.get("muscleMass") || undefined,
+    chest: formData.get("chest") || undefined,
+    waist: formData.get("waist") || undefined,
+    hips: formData.get("hips") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+  const crow = await db.select().from(clients).where(eq(clients.id, parsed.data.clientId)).limit(1);
+  if (!crow[0] || crow[0].trainerId !== user.id) return fail("Client not found");
+  const measurements: Record<string, string> = {};
+  if (parsed.data.chest) measurements.chest = parsed.data.chest;
+  if (parsed.data.waist) measurements.waist = parsed.data.waist;
+  if (parsed.data.hips) measurements.hips = parsed.data.hips;
+  await db.insert(progressCheckins).values({
+    clientId: parsed.data.clientId,
+    weight: parsed.data.weight,
+    bodyFatPercent: parsed.data.bodyFatPercent ?? null,
+    muscleMass: parsed.data.muscleMass ?? null,
+    measurementsJson: Object.keys(measurements).length > 0 ? measurements : null,
+    notes: parsed.data.notes?.trim() || null,
+    status: "approved",
+  });
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}`);
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}/progress`);
+  return ok();
+}
+
+export async function assignPlansAction(formData: FormData) {
+  const user = await requireTrainer();
+  if (isDemoMode()) return ok();
+  const parsed = assignPlansSchema.safeParse({
+    clientId: formData.get("clientId"),
+    programId: formData.get("programId") || "",
+    planId: formData.get("planId") || "",
+    startDate: formData.get("startDate"),
+  });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+  const crow = await db.select().from(clients).where(eq(clients.id, parsed.data.clientId)).limit(1);
+  if (!crow[0] || crow[0].trainerId !== user.id) return fail("Client not found");
+  if (parsed.data.programId) {
+    const prog = await db
+      .select({ id: workoutPrograms.id })
+      .from(workoutPrograms)
+      .where(and(eq(workoutPrograms.id, parsed.data.programId), eq(workoutPrograms.trainerId, user.id)))
+      .limit(1);
+    if (!prog[0]) return fail("Program not found");
+    await db.insert(workoutAssignments).values({ clientId: parsed.data.clientId, programId: parsed.data.programId, startDate: parsed.data.startDate, status: "active" });
+  }
+  if (parsed.data.planId) {
+    const plan = await db
+      .select({ id: dietPlans.id })
+      .from(dietPlans)
+      .where(and(eq(dietPlans.id, parsed.data.planId), eq(dietPlans.trainerId, user.id)))
+      .limit(1);
+    if (!plan[0]) return fail("Plan not found");
+    await db.insert(dietAssignments).values({ clientId: parsed.data.clientId, dietPlanId: parsed.data.planId, startDate: parsed.data.startDate, status: "active" });
+  }
+  revalidatePath("/trainer/clients");
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}`);
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}/assign`);
+  return ok();
+}
+
+export async function claimClientAction(formData: FormData) {
+  const user = await requireTrainer();
+  if (isDemoMode()) return ok();
+  const clientId = String(formData.get("clientId") ?? "");
+  if (!clientId) return fail("Missing client");
+  const crow = await db.select().from(clients).where(eq(clients.id, clientId)).limit(1);
+  if (!crow[0]) return fail("Client not found");
+  if (crow[0].trainerId && crow[0].trainerId !== user.id) return fail("Already assigned to another trainer");
+  await db.update(clients).set({ trainerId: user.id }).where(eq(clients.id, clientId));
+  revalidatePath("/trainer/clients");
+  revalidatePath("/trainer");
   return ok();
 }

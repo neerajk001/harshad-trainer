@@ -2,118 +2,113 @@ import Link from "next/link";
 
 import { ActionForm } from "@/components/ActionForm";
 import { CreatePanel } from "@/components/create-panel";
-import { Avatar, Badge, DarkCard, EmptyState, Field, PageHeader, inputDarkCls } from "@/components/ui";
-import { addClientAction, setClientStatusAction } from "@/actions/trainer";
-import { getTrainerClients } from "@/lib/queries";
+import { Badge, CCard, EmptyState, cInput, goldBtn } from "@/components/client/ui";
+import { TabLinks } from "@/components/client/tab-links";
+import { addClientAction } from "@/actions/trainer";
+import { getTrainerClientsMeta, getUnassignedClients } from "@/lib/coach-queries";
 import { requireTrainer } from "@/lib/session";
 import { isDemoMode } from "@/lib/demo";
+import { goalLabel } from "@/lib/client-utils";
 
-export default async function ClientsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
+export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ tab?: string; q?: string }> }) {
   const user = await requireTrainer();
   const sp = await searchParams;
-  const q = sp.q ?? "";
-  const rows = process.env.DATABASE_URL || isDemoMode() ? await getTrainerClients(user.id, q || undefined) : [];
+  const tab = ["active", "atrisk"].includes(sp.tab ?? "") ? (sp.tab as string) : "all";
+  const q = (sp.q ?? "").trim().toLowerCase();
+
+  const hasDb = Boolean(process.env.DATABASE_URL) || isDemoMode();
+  const data = hasDb ? await getTrainerClientsMeta(user.id) : { rows: [], counts: { all: 0, active: 0, atRisk: 0 } };
+  const unassigned = hasDb ? await getUnassignedClients() : [];
+
+  let rows = data.rows;
+  if (tab === "active") rows = rows.filter((r) => !r.meta.atRisk && r.client.status === "active");
+  if (tab === "atrisk") rows = rows.filter((r) => r.meta.atRisk);
+  if (q) rows = rows.filter((r) => r.user.name.toLowerCase().includes(q) || r.user.email.toLowerCase().includes(q));
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Clients" subtitle={`${rows.length} client${rows.length === 1 ? "" : "s"}`} />
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="order-2 lg:order-1">
-          <form method="get" className="mb-4 flex gap-2">
-            <input
-              name="q"
-              defaultValue={q}
-              placeholder="Search name or email…"
-              aria-label="Search clients"
-              className={inputDarkCls}
-            />
-            <button
-              type="submit"
-              className="shrink-0 rounded-xl border border-white/15 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/10"
-            >
-              Search
-            </button>
-            {q ? (
-              <Link
-                href="/trainer/clients"
-                className="shrink-0 rounded-xl px-3 py-2 text-sm text-zinc-400 hover:text-white"
-              >
-                Clear
-              </Link>
-            ) : null}
-          </form>
-
-          <div className="space-y-2">
-            {rows.length === 0 ? (
-              <EmptyState title={q ? "No matching clients" : "No clients yet"} hint={q ? "Try a different name or email." : "Add your first client with the form."} />
-            ) : (
-              rows.map(({ client, user: u }) => (
-                <div
-                  key={client.id}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-zinc-900 px-4 py-3"
-                >
-                  <Link href={`/trainer/clients/${client.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                    <Avatar name={u.name} size="md" />
-                    <span className="min-w-0">
-                      <span className="block truncate font-medium">{u.name}</span>
-                      <span className="block truncate text-xs text-zinc-500">
-                        {u.email}
-                        {client.goal ? ` · ${client.goal}` : ""}
-                      </span>
-                    </span>
-                  </Link>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <Badge tone={client.status === "active" ? "green" : "neutral"}>{client.status}</Badge>
-                    <ActionForm
-                      action={setClientStatusAction}
-                      submitLabel={client.status === "active" ? "Pause" : "Activate"}
-                      pendingLabel="…"
-                      variant="danger"
-                      className=""
-                      confirmMessage={
-                        client.status === "active"
-                          ? `Pause ${u.name}? They keep their plans and history.`
-                          : `Activate ${u.name}?`
-                      }
-                    >
-                      <input type="hidden" name="clientId" value={client.id} />
-                      <input type="hidden" name="status" value={client.status === "active" ? "paused" : "active"} />
-                    </ActionForm>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+    <div className="space-y-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Clients</h1>
+          <p className="mt-1 text-sm text-zinc-500">Manage all your clients.</p>
         </div>
+        <a href="#add-client" className={`${goldBtn} !px-4 !py-2.5 text-sm`}>
+          + Add Client
+        </a>
+      </div>
 
-        <CreatePanel label="Add client" className="order-1 lg:order-2">
-          <DarkCard>
+      <TabLinks
+        activeKey={tab}
+        tabs={[
+          { key: "all", label: `All (${data.counts.all})` },
+          { key: "active", label: `Active (${data.counts.active})` },
+          { key: "atrisk", label: `At Risk (${data.counts.atRisk})` },
+        ]}
+      />
+
+      <form method="get" action="/trainer/clients">
+        <input type="hidden" name="tab" value={tab} />
+        <input name="q" defaultValue={sp.q ?? ""} placeholder="Search clients…" aria-label="Search clients" className={cInput} />
+      </form>
+
+      {unassigned.length > 0 ? (
+        <CCard className="border-gold/30 bg-gold/5">
+          <p className="text-sm font-semibold text-gold">{unassigned.length} new signup{unassigned.length === 1 ? "" : "s"} waiting</p>
+          <p className="mt-1 text-xs text-zinc-400">Self-registered clients with no coach yet.</p>
+          <Link href="/trainer/clients/unassigned" className="mt-2 inline-block text-xs font-semibold text-gold">
+            Review &amp; assign →
+          </Link>
+        </CCard>
+      ) : null}
+
+      <div className="space-y-2.5">
+        {rows.length === 0 ? (
+          <EmptyState title={q ? "No matching clients" : "No clients yet"} hint={q ? "Try a different name or email." : "Add your first client below."} />
+        ) : (
+          rows.map((r) => (
+            <Link
+              key={r.client.id}
+              href={`/trainer/clients/${r.client.id}`}
+              className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900"
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+                {r.user.name?.[0]?.toUpperCase() ?? "C"}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-medium">{r.user.name}</span>
+                <span className="block truncate text-xs text-zinc-500">
+                  {[goalLabel(r.client.goal) ?? "No goal", r.meta.durationWeeks ? `${r.meta.durationWeeks} weeks` : null]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+              </span>
+              {r.client.status !== "active" ? (
+                <Badge>Paused</Badge>
+              ) : r.meta.atRisk ? (
+                <Badge tone="amber">At Risk</Badge>
+              ) : (
+                <Badge tone="green">Active</Badge>
+              )}
+            </Link>
+          ))
+        )}
+      </div>
+
+      <div id="add-client">
+        <CreatePanel label="Add client" className="">
+          <CCard>
             <h2 className="font-semibold">Add client</h2>
-            <p className="mt-1 text-xs text-zinc-500">
-              Development flow: creates the client login immediately. Share the credentials securely; do not email passwords in production.
-            </p>
+            <p className="mt-1 text-xs text-zinc-500">Creates the client login immediately. Share credentials securely.</p>
             <div className="mt-4">
-              <ActionForm action={addClientAction} submitLabel="Create client">
-                <Field label="Full name">
-                  <input name="name" placeholder="e.g. Rohan Mehta" required maxLength={120} className={inputDarkCls} />
-                </Field>
-                <Field label="Email">
-                  <input name="email" type="email" placeholder="client@example.com" required maxLength={255} className={inputDarkCls} />
-                </Field>
-                <Field label="Temporary password" hint="Minimum 8 characters.">
-                  <input name="password" type="password" placeholder="Min 8 chars" required minLength={8} className={inputDarkCls} />
-                </Field>
-                <Field label="Goal">
-                  <input name="goal" placeholder="Optional, e.g. Lose 5 kg" maxLength={500} className={inputDarkCls} />
-                </Field>
+              <ActionForm action={addClientAction} submitLabel="Create client" successMessage="Client created">
+                <input name="name" placeholder="Full name" required maxLength={120} className={cInput} />
+                <input name="email" type="email" placeholder="Email" required maxLength={255} className={cInput} />
+                <input name="password" type="password" placeholder="Temporary password (min 8)" required minLength={8} className={cInput} />
+                <input name="phone" placeholder="Phone (optional)" maxLength={40} className={cInput} />
+                <input name="goal" placeholder="Goal (optional)" maxLength={500} className={cInput} />
               </ActionForm>
             </div>
-          </DarkCard>
+          </CCard>
         </CreatePanel>
       </div>
     </div>

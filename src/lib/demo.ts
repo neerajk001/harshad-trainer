@@ -117,12 +117,23 @@ export function getDemoClientDetail(_trainerId: string, clientId: string) {
     .slice(0, 20);
   const meals = raw.mealLogs
     .filter((m) => m.clientId === clientId)
-    .map((m) => ({ ...m, loggedAt: D(m.loggedAt) }))
+    .map((m) => ({ ...m, mealType: null as string | null, carbs: null as number | null, fat: null as number | null, loggedAt: D(m.loggedAt) }))
     .sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime())
     .slice(0, 20);
   const checkins = raw.checkins
     .filter((c) => c.clientId === clientId)
-    .map((c) => ({ ...c, createdAt: D(c.createdAt) }))
+    .map((c) => ({
+      ...c,
+      muscleMass: null as number | null,
+      feel: null as string | null,
+      sleepHours: null as number | null,
+      energyLevel: null as string | null,
+      stressLevel: null as string | null,
+      status: "approved",
+      feedback: null as string | null,
+      reviewedAt: null as Date | null,
+      createdAt: D(c.createdAt),
+    }))
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 20);
   return { client: toClient(client), user: toUser(user), wAssign, dAssign, logs, meals, checkins };
@@ -144,6 +155,7 @@ export function getDemoPrograms(trainerId: string) {
       name: p.name,
       description: p.description,
       durationWeeks: p.durationWeeks,
+      level: "intermediate",
       createdAt: D(p.createdAt),
     }) satisfies Program)
     .map((prog) => {
@@ -206,6 +218,7 @@ export function getDemoDietPlans(trainerId: string) {
               id: m.id,
               dietPlanId: plan.id,
               name: m.name,
+              time: null,
               sortOrder: m.sortOrder,
             }) satisfies DietMeal,
         )
@@ -289,6 +302,9 @@ export function getDemoDashboard(clientId: string) {
           energyLevel: null,
           stressLevel: null,
           measurementsJson: (c.measurementsJson ?? null) as Record<string, string> | null,
+          status: "approved",
+          feedback: null,
+          reviewedAt: null,
           createdAt: D(c.createdAt),
         }) satisfies Checkin,
     )

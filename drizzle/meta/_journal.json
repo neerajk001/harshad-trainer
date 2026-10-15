@@ -15,6 +15,13 @@
       "when": 1792073836522,
       "tag": "0001_purple_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792075215689,
+      "tag": "0002_striped_nicolaos",
+      "breakpoints": true
     }
   ]
 }

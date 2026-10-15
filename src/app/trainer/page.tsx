@@ -1,148 +1,109 @@
 import Link from "next/link";
 
-import { Avatar, Badge, DarkCard, EmptyState, PageHeader, Stat } from "@/components/ui";
-import { getTrainerOverview } from "@/lib/queries";
+import { CCard, EmptyState, SectionTitle, StatTile } from "@/components/client/ui";
+import { MultiLineChart } from "@/components/coach/multi-line-chart";
+import { getTrainerDashboard } from "@/lib/coach-queries";
 import { requireTrainer } from "@/lib/session";
 import { isDemoMode } from "@/lib/demo";
 
-function timeAgo(value: Date | string) {
-  const ms = Date.now() - new Date(value).getTime();
-  if (ms < 60_000) return "just now";
-  const mins = Math.floor(ms / 60_000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(value).toLocaleDateString();
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
 }
 
-export default async function TrainerOverview() {
+export default async function CoachHome() {
   const user = await requireTrainer();
   if (!process.env.DATABASE_URL && !isDemoMode()) {
-    return (
-      <div>
-        <PageHeader title={`Welcome, ${user.name}`} subtitle="Trainer overview" />
-        <EmptyState title="DATABASE_URL is not configured" hint="Set DATABASE_URL in .env.local, run migrations + seed. See README." />
-      </div>
-    );
+    return <EmptyState title="DATABASE_URL is not configured" hint="Set DATABASE_URL in .env.local, run migrations + seed. See README." />;
   }
-  const data = await getTrainerOverview(user.id);
-
-  const assignedCount = data.clientRows.filter((r) => r.client.goal).length;
-  const attentionShare = data.totalClients
-    ? Math.round((data.needingAttention.length / data.totalClients) * 100)
-    : 0;
+  const data = await getTrainerDashboard(user.id);
+  const first = user.name?.split(" ")[0] ?? "Coach";
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={`Welcome, ${user.name}`}
-        subtitle="Clients, activity and who needs attention"
-        action={
-          <Link
-            href="/trainer/clients"
-            className="inline-flex items-center justify-center rounded-xl bg-lime-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-lime-700"
-          >
-            Manage clients
-          </Link>
-        }
-      />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {greeting()}, {first} <span aria-hidden>👋</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-500">Here&apos;s your coaching overview.</p>
+        </div>
+        <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">Last 7 days</span>
+      </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat variant="dark" label="Total clients" value={String(data.totalClients)} sub={`${assignedCount} with a goal`} />
-        <Stat variant="dark" accent label="Active this week" value={String(data.activeClients)} sub={`of ${data.totalClients} clients`} />
-        <Stat
-          variant="dark"
-          label="Needing attention"
-          value={String(data.needingAttention.length)}
-          sub={data.needingAttention.length ? "No activity in 7 days" : "Everyone logged in"}
+        <StatTile label="Total Clients" value={String(data.totalClients)} />
+        <StatTile label="Active Clients" value={String(data.activeClients)} sub={`of ${data.totalClients}`} />
+        <StatTile label="Avg. Adherence" value={`${data.adherence}%`} sub="30-day workouts" />
+        <StatTile label="Check-ins" value={String(data.checkinsThisWeek)} sub="this week" />
+      </div>
+
+      <section aria-label="Client progress">
+        <SectionTitle
+          title="Client Progress"
+          action={<Link href="/trainer/analytics" className="text-xs font-semibold text-gold">Analytics →</Link>}
         />
-        <Stat variant="dark" label="Inactive share" value={`${attentionShare}%`} sub={`past 7 days`} />
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <section aria-label="Clients needing attention">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-400">Needs attention</h2>
-          <DarkCard className="!p-2">
-            {data.needingAttention.length === 0 ? (
-              <div className="p-3">
-                <EmptyState title="All caught up" hint="Every client logged something in the last 7 days." />
-              </div>
-            ) : (
-              <ul className="divide-y divide-white/5">
-                {data.needingAttention.map(({ client, user: u }) => (
-                  <li key={client.id}>
-                    <Link
-                      href={`/trainer/clients/${client.id}`}
-                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/5"
-                    >
-                      <Avatar name={u.name} size="md" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{u.name}</span>
-                        <span className="block truncate text-xs text-zinc-500">{u.email}</span>
-                      </span>
-                      <Badge tone="amber">Inactive 7d+</Badge>
-                    </Link>
-                  </li>
+        <CCard>
+          {data.progressSeries.length === 0 ? (
+            <p className="py-4 text-center text-sm text-zinc-500">No check-in data yet.</p>
+          ) : (
+            <>
+              <div className="mb-2 flex flex-wrap gap-3">
+                {data.progressSeries.map((s) => (
+                  <span key={s.name} className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <span className="h-2 w-2 rounded-full bg-gold" />
+                    {s.name}
+                  </span>
                 ))}
-              </ul>
-            )}
-          </DarkCard>
-        </section>
-
-        <section aria-label="Recent activity">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-400">Recent activity</h2>
-          <DarkCard className="!p-2">
-            {data.recentLogs.length === 0 && data.recentCheckins.length === 0 ? (
-              <div className="p-3">
-                <EmptyState title="No activity yet" hint="Assign a plan and ask clients to log workouts and check-ins." />
               </div>
-            ) : (
-              <ul className="divide-y divide-white/5">
-                {data.recentLogs.slice(0, 5).map((l) => {
-                  const owner = data.clientRows.find((r) => r.client.id === l.clientId);
-                  return (
-                    <li key={l.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
-                      <span className="flex min-w-0 items-center gap-2">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-lime-500/15 text-xs font-bold text-lime-400">
-                          ✓
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm">Workout completed</span>
-                          {owner ? <span className="block truncate text-xs text-zinc-500">{owner.user.name}</span> : null}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-xs text-zinc-500">{timeAgo(l.completedAt)}</span>
-                    </li>
-                  );
-                })}
-                {data.recentCheckins.slice(0, 5).map((c) => {
-                  const owner = data.clientRows.find((r) => r.client.id === c.clientId);
-                  return (
-                    <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
-                      <span className="flex min-w-0 items-center gap-2">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-zinc-300">
-                          ↔
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm">Check-in · {c.weight} kg</span>
-                          {owner ? <span className="block truncate text-xs text-zinc-500">{owner.user.name}</span> : null}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-xs text-zinc-500">{timeAgo(c.createdAt)}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </DarkCard>
-        </section>
-      </div>
+              <MultiLineChart
+                height={150}
+                className="h-36 w-full"
+                series={data.progressSeries.map((s, i) => ({
+                  name: s.name,
+                  values: s.points.map((p) => p.weight),
+                  color: ["#f5c518", "#4ade80", "#60a5fa"][i % 3],
+                }))}
+              />
+            </>
+          )}
+        </CCard>
+      </section>
 
-      {data.totalClients > 0 ? (
-        <p className="text-xs text-zinc-600">Weekly activity window is the last 7 days.</p>
-      ) : null}
+      <section aria-label="Today's tasks">
+        <SectionTitle title="Today's Tasks" />
+        <div className="space-y-2.5">
+          <TaskRow
+            href="/trainer/checkins"
+            tint="#f5c518"
+            title={`${data.pendingCheckins.length} pending check-in review${data.pendingCheckins.length === 1 ? "" : "s"}`}
+          />
+          {data.unassignedCount > 0 ? (
+            <TaskRow href="/trainer/clients/unassigned" tint="#4ade80" title={`${data.unassignedCount} new client signup${data.unassignedCount === 1 ? "" : "s"} to assign`} />
+          ) : null}
+          <TaskRow
+            href="/trainer/clients"
+            tint="#f97316"
+            title={`${data.needingAttention.length} client${data.needingAttention.length === 1 ? "" : "s"} need attention`}
+          />
+        </div>
+      </section>
     </div>
+  );
+}
+
+function TaskRow({ href, tint, title }: { href: string; tint: string; title: string }) {
+  return (
+    <Link href={href} className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl" style={{ background: `${tint}22` }}>
+        <span className="h-3.5 w-3.5 rounded-full" style={{ background: tint }} />
+      </span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">{title}</span>
+      <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-zinc-600" fill="none" stroke="currentColor" strokeWidth={2}>
+        <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </Link>
   );
 }

@@ -11,6 +11,7 @@ import {
   dietPlans,
   foods,
   mealLogs,
+  messages,
   progressCheckins,
   users,
   workoutAssignments,
@@ -107,6 +108,10 @@ async function main() {
   await db
     .insert(progressCheckins)
     .values({ clientId: client.id, weight: 78.5, bodyFatPercent: 22.1, muscleMass: 56.4, feel: "Good", sleepHours: 7, energyLevel: "Good", stressLevel: "Moderate", notes: "DEMO seed check-in" });
+  await db.insert(messages).values([
+    { trainerId: trainer.id, clientId: client.id, senderId: clientUser.id, senderRole: "client", body: "Hey coach, should I increase my bench weight this week?" },
+    { trainerId: trainer.id, clientId: client.id, senderId: trainer.id, senderRole: "trainer", body: "Yes — add 2.5 kg if you hit all reps last session." },
+  ]);
 
   console.log("Done. Trainer: trainer@repora.demo / Trainer123! | Client: client@repora.demo / Client123!");
 }
