@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/ActionForm";
+import { CreatePanel } from "@/components/create-panel";
 import { DarkCard, EmptyState, Field, PageHeader, SectionHeading, inputDarkCls } from "@/components/ui";
 import {
   addDietMealAction,
@@ -21,7 +22,7 @@ export default async function DietPlansPage() {
     <div className="space-y-6">
       <PageHeader title="Diet plans" subtitle="Reusable nutrition plans with meals and foods" />
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-4">
+        <div className="order-2 space-y-4 lg:order-1">
           {plans.length === 0 ? <EmptyState title="No diet plans yet" hint="Create your first plan with the form." /> : null}
           {plans.map((p) => {
             const foodCount = p.meals.reduce((s, m) => s + m.foods.length, 0);
@@ -147,27 +148,29 @@ export default async function DietPlansPage() {
           })}
         </div>
 
-        <DarkCard>
-          <h2 className="font-semibold">New diet plan</h2>
-          <div className="mt-3">
-            <ActionForm action={createDietPlanAction} submitLabel="Create plan">
-              <Field label="Plan name">
-                <input name="name" placeholder="e.g. High-protein 2200" required maxLength={120} className={inputDarkCls} />
-              </Field>
-              <div className="grid grid-cols-2 gap-2">
-                <Field label="Daily calories">
-                  <input name="dailyCalories" type="number" placeholder="kcal" min={0} max={20000} className={inputDarkCls} />
+        <CreatePanel label="New diet plan" className="order-1 lg:order-2">
+          <DarkCard>
+            <h2 className="font-semibold">New diet plan</h2>
+            <div className="mt-3">
+              <ActionForm action={createDietPlanAction} submitLabel="Create plan">
+                <Field label="Plan name">
+                  <input name="name" placeholder="e.g. High-protein 2200" required maxLength={120} className={inputDarkCls} />
                 </Field>
-                <Field label="Protein (g)">
-                  <input name="proteinTarget" type="number" placeholder="Optional" min={0} max={2000} className={inputDarkCls} />
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Daily calories">
+                    <input name="dailyCalories" type="number" placeholder="kcal" min={0} max={20000} className={inputDarkCls} />
+                  </Field>
+                  <Field label="Protein (g)">
+                    <input name="proteinTarget" type="number" placeholder="Optional" min={0} max={2000} className={inputDarkCls} />
+                  </Field>
+                </div>
+                <Field label="Notes">
+                  <input name="notes" placeholder="Optional" maxLength={2000} className={inputDarkCls} />
                 </Field>
-              </div>
-              <Field label="Notes">
-                <input name="notes" placeholder="Optional" maxLength={2000} className={inputDarkCls} />
-              </Field>
-            </ActionForm>
-          </div>
-        </DarkCard>
+              </ActionForm>
+            </div>
+          </DarkCard>
+        </CreatePanel>
       </div>
     </div>
   );

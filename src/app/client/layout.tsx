@@ -1,10 +1,15 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { Viewport } from "next";
 
 import { ClientTabBar } from "@/components/client-nav";
 import { SignOutButton } from "@/components/SignOutButton";
 import { Avatar } from "@/components/ui";
 import { requireClient } from "@/lib/session";
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+};
 
 const links = [
   { href: "/client", label: "Today" },
@@ -17,7 +22,7 @@ const links = [
 export default async function ClientLayout({ children }: { children: ReactNode }) {
   const { user } = await requireClient();
   return (
-    <div className="min-h-dvh bg-zinc-50 text-zinc-900">
+    <div className="min-h-dvh bg-zinc-50 text-zinc-900 [color-scheme:light]">
       <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/client" className="flex items-center gap-2.5">

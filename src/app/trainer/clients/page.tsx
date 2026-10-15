@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ActionForm } from "@/components/ActionForm";
+import { CreatePanel } from "@/components/create-panel";
 import { Avatar, Badge, DarkCard, EmptyState, Field, PageHeader, inputDarkCls } from "@/components/ui";
 import { addClientAction, setClientStatusAction } from "@/actions/trainer";
 import { getTrainerClients } from "@/lib/queries";
@@ -22,7 +23,7 @@ export default async function ClientsPage({
       <PageHeader title="Clients" subtitle={`${rows.length} client${rows.length === 1 ? "" : "s"}`} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div>
+        <div className="order-2 lg:order-1">
           <form method="get" className="mb-4 flex gap-2">
             <input
               name="q"
@@ -90,28 +91,30 @@ export default async function ClientsPage({
           </div>
         </div>
 
-        <DarkCard>
-          <h2 className="font-semibold">Add client</h2>
-          <p className="mt-1 text-xs text-zinc-500">
-            Development flow: creates the client login immediately. Share the credentials securely; do not email passwords in production.
-          </p>
-          <div className="mt-4">
-            <ActionForm action={addClientAction} submitLabel="Create client">
-              <Field label="Full name">
-                <input name="name" placeholder="e.g. Rohan Mehta" required maxLength={120} className={inputDarkCls} />
-              </Field>
-              <Field label="Email">
-                <input name="email" type="email" placeholder="client@example.com" required maxLength={255} className={inputDarkCls} />
-              </Field>
-              <Field label="Temporary password" hint="Minimum 8 characters.">
-                <input name="password" type="password" placeholder="Min 8 chars" required minLength={8} className={inputDarkCls} />
-              </Field>
-              <Field label="Goal">
-                <input name="goal" placeholder="Optional, e.g. Lose 5 kg" maxLength={500} className={inputDarkCls} />
-              </Field>
-            </ActionForm>
-          </div>
-        </DarkCard>
+        <CreatePanel label="Add client" className="order-1 lg:order-2">
+          <DarkCard>
+            <h2 className="font-semibold">Add client</h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              Development flow: creates the client login immediately. Share the credentials securely; do not email passwords in production.
+            </p>
+            <div className="mt-4">
+              <ActionForm action={addClientAction} submitLabel="Create client">
+                <Field label="Full name">
+                  <input name="name" placeholder="e.g. Rohan Mehta" required maxLength={120} className={inputDarkCls} />
+                </Field>
+                <Field label="Email">
+                  <input name="email" type="email" placeholder="client@example.com" required maxLength={255} className={inputDarkCls} />
+                </Field>
+                <Field label="Temporary password" hint="Minimum 8 characters.">
+                  <input name="password" type="password" placeholder="Min 8 chars" required minLength={8} className={inputDarkCls} />
+                </Field>
+                <Field label="Goal">
+                  <input name="goal" placeholder="Optional, e.g. Lose 5 kg" maxLength={500} className={inputDarkCls} />
+                </Field>
+              </ActionForm>
+            </div>
+          </DarkCard>
+        </CreatePanel>
       </div>
     </div>
   );

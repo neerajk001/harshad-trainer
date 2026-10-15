@@ -49,7 +49,7 @@ export default async function TrainerOverview() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat variant="dark" label="Total clients" value={String(data.totalClients)} sub={`${assignedCount} with a goal`} />
         <Stat variant="dark" accent label="Active this week" value={String(data.activeClients)} sub={`of ${data.totalClients} clients`} />
         <Stat

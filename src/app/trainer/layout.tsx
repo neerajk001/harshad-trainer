@@ -1,15 +1,21 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { Viewport } from "next";
 
 import { requireTrainer } from "@/lib/session";
 import { SignOutButton } from "@/components/SignOutButton";
 import { TrainerNav } from "@/components/trainer-nav";
+import { TrainerTabBar } from "@/components/trainer-tab-bar";
 import { Avatar } from "@/components/ui";
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+};
 
 export default async function TrainerLayout({ children }: { children: ReactNode }) {
   const user = await requireTrainer();
   return (
-    <div className="min-h-dvh bg-zinc-950 text-zinc-100">
+    <div className="min-h-dvh bg-zinc-950 text-zinc-100 [color-scheme:dark]">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <div className="flex min-w-0 items-center gap-5">
@@ -25,14 +31,14 @@ export default async function TrainerLayout({ children }: { children: ReactNode 
               <Avatar name={user.name} size="sm" />
               {user.name}
             </span>
-            <SignOutButton className="rounded-xl border border-white/15 px-3 py-1.5 text-sm font-medium text-zinc-200 hover:bg-white/10" />
+            <SignOutButton className="rounded-xl border border-white/15 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10" />
           </div>
         </div>
-        <div className="mx-auto max-w-6xl px-4 pb-2 md:hidden">
-          <TrainerNav />
-        </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 pb-36 md:py-8 md:pb-8">{children}</main>
+      <div className="md:hidden">
+        <TrainerTabBar />
+      </div>
     </div>
   );
 }

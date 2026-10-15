@@ -169,10 +169,10 @@ export function Badge({ children, tone = "neutral" }: { children: ReactNode; ton
 }
 
 export const inputCls =
-  "w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-lime-600 focus:ring-2 focus:ring-lime-600/20 dark:border-zinc-700 dark:bg-zinc-900";
+  "w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-base outline-none transition focus:border-lime-600 focus:ring-2 focus:ring-lime-600/20 sm:py-2 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900";
 
 export const inputDarkCls =
-  "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20";
+  "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2.5 text-base text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-lime-500 focus:ring-2 focus:ring-lime-500/20 sm:py-2 sm:text-sm";
 
 export const btnPrimaryCls =
   "inline-flex items-center justify-center rounded-xl bg-lime-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-lime-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600 disabled:opacity-50";
@@ -181,4 +181,4 @@ export const btnSecondaryCls =
   "inline-flex items-center justify-center rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800";
 
 export const btnDangerCls =
-  "inline-flex items-center justify-center rounded-xl border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 transition hover:bg-red-500/10 disabled:opacity-50";
+  "inline-flex min-h-9 items-center justify-center rounded-xl border border-red-500/30 px-3.5 py-2 text-xs font-medium text-red-400 transition hover:bg-red-500/10 disabled:opacity-50";

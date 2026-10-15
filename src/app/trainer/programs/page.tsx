@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/ActionForm";
+import { CreatePanel } from "@/components/create-panel";
 import { DarkCard, EmptyState, Field, PageHeader, SectionHeading, inputDarkCls } from "@/components/ui";
 import {
   addExerciseAction,
@@ -22,7 +23,7 @@ export default async function ProgramsPage() {
       <PageHeader title="Workout programs" subtitle="Reusable programs with days and exercises" />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-4">
+        <div className="order-2 space-y-4 lg:order-1">
           {programs.length === 0 ? (
             <EmptyState title="No programs yet" hint="Create your first program with the form." />
           ) : null}
@@ -151,22 +152,24 @@ export default async function ProgramsPage() {
           ))}
         </div>
 
-        <DarkCard>
-          <h2 className="font-semibold">New program</h2>
-          <div className="mt-3">
-            <ActionForm action={createProgramAction} submitLabel="Create program">
-              <Field label="Program name">
-                <input name="name" placeholder="e.g. Full-body strength" required maxLength={120} className={inputDarkCls} />
-              </Field>
-              <Field label="Description">
-                <input name="description" placeholder="Optional" maxLength={2000} className={inputDarkCls} />
-              </Field>
-              <Field label="Duration (weeks)">
-                <input name="durationWeeks" type="number" defaultValue={4} min={1} max={52} className={inputDarkCls} />
-              </Field>
-            </ActionForm>
-          </div>
-        </DarkCard>
+        <CreatePanel label="New program" className="order-1 lg:order-2">
+          <DarkCard>
+            <h2 className="font-semibold">New program</h2>
+            <div className="mt-3">
+              <ActionForm action={createProgramAction} submitLabel="Create program">
+                <Field label="Program name">
+                  <input name="name" placeholder="e.g. Full-body strength" required maxLength={120} className={inputDarkCls} />
+                </Field>
+                <Field label="Description">
+                  <input name="description" placeholder="Optional" maxLength={2000} className={inputDarkCls} />
+                </Field>
+                <Field label="Duration (weeks)">
+                  <input name="durationWeeks" type="number" defaultValue={4} min={1} max={52} className={inputDarkCls} />
+                </Field>
+              </ActionForm>
+            </div>
+          </DarkCard>
+        </CreatePanel>
       </div>
     </div>
   );
