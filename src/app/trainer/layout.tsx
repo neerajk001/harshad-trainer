@@ -40,12 +40,6 @@ export default async function TrainerLayout({ children }: { children: ReactNode 
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" aria-label="Notifications" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-400">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                <path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 13 6 9Z" strokeLinejoin="round" />
-                <path d="M10 18a2 2 0 0 0 4 0" strokeLinecap="round" />
-              </svg>
-            </button>
             <span className="hidden text-sm text-zinc-300 sm:block">{user.name}</span>
             <Link href="/trainer/more" aria-label="Profile" className="grid h-9 w-9 place-items-center rounded-full bg-gold text-sm font-semibold text-zinc-950">
               {initials(user.name)}

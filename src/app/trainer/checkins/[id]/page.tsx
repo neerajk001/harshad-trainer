@@ -60,11 +60,6 @@ export default async function CheckinDetailPage({ params }: { params: Promise<{ 
         {c.notes ? <p className="mt-3 rounded-2xl bg-white/5 p-3 text-sm text-zinc-300">{c.notes}</p> : null}
       </CCard>
 
-      <CCard className="border-dashed">
-        <p className="text-sm font-semibold">Photos</p>
-        <p className="mt-1 text-xs text-zinc-500">Progress photo uploads aren&apos;t part of this MVP yet.</p>
-      </CCard>
-
       <CCard>
         <p className="text-sm font-semibold">Review</p>
         <div className="mt-3">

@@ -93,15 +93,6 @@ export default async function ClientDetailPage({
           </CCard>
 
           <CCard>
-            <p className="text-sm font-semibold">Recent Photos</p>
-            <div className="mt-3 flex gap-2">
-              <div className="grid h-20 w-20 place-items-center rounded-2xl border border-dashed border-white/15 text-xs text-zinc-600">Soon</div>
-              <div className="grid h-20 w-20 place-items-center rounded-2xl border border-dashed border-white/15 text-xs text-zinc-600">Soon</div>
-              <div className="grid h-20 w-20 place-items-center rounded-2xl border border-dashed border-white/15 text-2xl text-zinc-600">+</div>
-            </div>
-          </CCard>
-
-          <CCard>
             <p className="text-sm font-semibold">Client Details</p>
             <ul className="mt-2 space-y-2 text-sm">
               <li className="flex items-center gap-2 text-zinc-300">

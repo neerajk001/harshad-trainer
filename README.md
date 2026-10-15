@@ -50,7 +50,7 @@ See `.env.example` for the exact variables. `.env.local` is gitignored — never
   - `/trainer/programs` + `/trainer/programs/[id]` builder (days, exercises, level) · `/trainer/diet-plans` + `/trainer/diet-plans/[id]` builder (targets, meals with times, foods).
   - `/trainer/checkins` (Pending/Review tabs) + `/trainer/checkins/[id]` (approve / send feedback).
   - `/trainer/messages` + `/trainer/messages/[clientId]` two-way chat.
-  - `/trainer/analytics`, `/trainer/notifications` (derived from real data), `/trainer/calendar` (placeholder — no scheduling model), `/trainer/more`, `/trainer/settings`.
+  - `/trainer/more` (menu) + `/trainer/settings`.
 - Client app (mobile-first, dark + gold): `/client` dashboard, `/client/workouts` (list + day detail + per-set exercise log), `/client/nutrition` (today + diet plan) and `/client/nutrition/add` (searchable food library), `/client/progress`, `/client/checkin`, `/client/messages`, `/client/profile`.
 - Public: `/` landing, `/signup` (email self-sign-up), `/onboarding` + `/onboarding/details` (goal + metrics captured on first login). Trainer-created clients skip onboarding.
 - Loading, error, and 404 states are handled at the app root plus per-portal skeletons.
@@ -70,7 +70,7 @@ Migration `0002`:
 - `progress_checkins` review workflow: `status`, `feedback`, `reviewed_at`.
 - `messages`: two-way trainer ↔ client chat.
 
-Photos are intentionally not implemented (out of scope); the UI shows a placeholder.
+Photos are intentionally not implemented (out of scope).
 
 Run `npm run db:migrate` to apply, and `npm run db:seed` to seed demo data + the food library.
 

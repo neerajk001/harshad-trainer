@@ -17,7 +17,7 @@ export default async function ClientProgressPage({
 }) {
   const { id } = await params;
   const sp = await searchParams;
-  const tab = ["bodyfat", "photos", "measure"].includes(sp.tab ?? "") ? (sp.tab as string) : "weight";
+  const tab = ["bodyfat", "measure"].includes(sp.tab ?? "") ? (sp.tab as string) : "weight";
   const user = await requireTrainer();
   const data = await getClientProgressData(user.id, id);
   if (!data) {
@@ -46,7 +46,6 @@ export default async function ClientProgressPage({
         tabs={[
           { key: "weight", label: "Weight" },
           { key: "bodyfat", label: "Body Fat" },
-          { key: "photos", label: "Photos" },
           { key: "measure", label: "Measure" },
         ]}
       />
@@ -76,8 +75,6 @@ export default async function ClientProgressPage({
           {bfSeries.length > 1 ? <LineChart values={bfSeries} height={150} className="mt-4 h-36 w-full" /> : null}
         </CCard>
       ) : null}
-
-      {tab === "photos" ? <EmptyState title="Photos coming soon" hint="Progress photo uploads aren't part of this MVP yet." /> : null}
 
       {tab === "measure" ? (
         <CCard>

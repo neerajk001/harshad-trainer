@@ -36,12 +36,6 @@ export default async function ClientLayout({ children }: { children: ReactNode }
             <span className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-100">Repora</span>
           </Link>
           <div className="flex items-center gap-3">
-            <button type="button" aria-label="Notifications" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-400">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                <path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 13 6 9Z" strokeLinejoin="round" />
-                <path d="M10 18a2 2 0 0 0 4 0" strokeLinecap="round" />
-              </svg>
-            </button>
             <Link href="/client/profile" aria-label="Profile">
               <GoldAvatar name={user.name} />
             </Link>

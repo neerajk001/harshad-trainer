@@ -3,7 +3,6 @@ import { and, desc, eq, gte, inArray, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import {
   clients,
-  dietPlans,
   messages,
   progressCheckins,
   users,
@@ -29,7 +28,6 @@ export async function getTrainerDashboard(trainerId: string) {
     return {
       totalClients: o.totalClients,
       activeClients: o.activeClients,
-      adherence: 82,
       checkinsThisWeek: o.recentCheckins.length,
       needingAttention: o.needingAttention,
       pendingCheckins: [],
@@ -66,14 +64,9 @@ export async function getTrainerDashboard(trainerId: string) {
   const pendingCheckins = checkins.filter((c) => c.status === "pending").slice(0, 8);
   const checkinsThisWeek = checkins.filter((c) => c.createdAt.getTime() > since7.getTime()).length;
 
-  // Adherence: workouts in the last 30 days vs a 3/week expectation.
+  // Group logs per client (used to rank who to chart).
   const logsByClient = new Map<string, number>();
   for (const l of logs30) logsByClient.set(l.clientId, (logsByClient.get(l.clientId) ?? 0) + 1);
-  const adherence = rows.length
-    ? Math.round(
-        rows.reduce((s, r) => s + Math.min(100, Math.round(((logsByClient.get(r.client.id) ?? 0) / 12) * 100)), 0) / rows.length,
-      )
-    : 0;
 
   // Progress series for the 3 most active clients.
   const ranked = [...rows]
@@ -94,7 +87,6 @@ export async function getTrainerDashboard(trainerId: string) {
   return {
     totalClients: rows.length,
     activeClients: activeIds.size,
-    adherence,
     checkinsThisWeek,
     needingAttention,
     pendingCheckins,
@@ -245,70 +237,4 @@ export async function getClientThread(clientId: string, trainerId: string | null
   const trow = await db.select().from(users).where(eq(users.id, trainerId)).limit(1);
   const msgs = await db.select().from(messages).where(eq(messages.clientId, clientId)).orderBy(messages.createdAt);
   return { messages: msgs, trainer: trow[0] ?? null };
-}
-
-export async function getTrainerAnalytics(trainerId: string) {
-  const rows = isDemoMode() ? getDemoClients(trainerId) : await trainerClientRows(trainerId);
-  const clientIds = rows.map((r) => r.client.id);
-  const goalCounts: Record<string, number> = {};
-  for (const r of rows) {
-    const g = r.client.goal ?? "unset";
-    const key = ["lose_fat", "build_muscle", "get_stronger", "general_fitness"].includes(g) ? g : "other";
-    goalCounts[key] = (goalCounts[key] ?? 0) + 1;
-  }
-  let activeClients = 0;
-  let adherence = 0;
-  let checkins30 = 0;
-  if (!isDemoMode() && clientIds.length) {
-    const since30 = new Date(Date.now() - 30 * DAY);
-    const since7 = new Date(Date.now() - 7 * DAY);
-    const logs = await db
-      .select()
-      .from(workoutLogs)
-      .where(and(inArray(workoutLogs.clientId, clientIds), gte(workoutLogs.completedAt, since30)));
-    const checks = await db
-      .select()
-      .from(progressCheckins)
-      .where(and(inArray(progressCheckins.clientId, clientIds), gte(progressCheckins.createdAt, since30)));
-    checkins30 = checks.length;
-    const activeIds = new Set<string>();
-    for (const l of logs) if (l.completedAt.getTime() > since7.getTime()) activeIds.add(l.clientId);
-    for (const c of checks) if (c.createdAt.getTime() > since7.getTime()) activeIds.add(c.clientId);
-    activeClients = activeIds.size;
-    const byClient = new Map<string, number>();
-    for (const l of logs) byClient.set(l.clientId, (byClient.get(l.clientId) ?? 0) + 1);
-    adherence = rows.length
-      ? Math.round(rows.reduce((s, r) => s + Math.min(100, Math.round(((byClient.get(r.client.id) ?? 0) / 12) * 100)), 0) / rows.length)
-      : 0;
-  } else {
-    activeClients = rows.length;
-    adherence = 82;
-  }
-  return { totalClients: rows.length, activeClients, adherence, checkins30, goalCounts };
-}
-
-export async function getTrainerNotifications(trainerId: string) {
-  if (isDemoMode()) return [];
-  const rows = await trainerClientRows(trainerId);
-  const clientIds = rows.map((r) => r.client.id);
-  if (clientIds.length === 0) return [];
-  const [logs, checks, msgs] = await Promise.all([
-    db.select({ log: workoutLogs, user: users }).from(workoutLogs).innerJoin(clients, eq(clients.id, workoutLogs.clientId)).innerJoin(users, eq(users.id, clients.userId)).where(inArray(workoutLogs.clientId, clientIds)).orderBy(desc(workoutLogs.completedAt)).limit(10),
-    db.select({ checkin: progressCheckins, user: users }).from(progressCheckins).innerJoin(clients, eq(clients.id, progressCheckins.clientId)).innerJoin(users, eq(users.id, clients.userId)).where(inArray(progressCheckins.clientId, clientIds)).orderBy(desc(progressCheckins.createdAt)).limit(10),
-    db.select({ msg: messages, user: users }).from(messages).innerJoin(clients, eq(clients.id, messages.clientId)).innerJoin(users, eq(users.id, clients.userId)).where(and(inArray(messages.clientId, clientIds), eq(messages.senderRole, "client"))).orderBy(desc(messages.createdAt)).limit(10),
-  ]);
-  const items = [
-    ...checks.map((r) => ({ id: r.checkin.id, kind: "checkin" as const, name: r.user.name, text: "submitted a new check-in", at: r.checkin.createdAt })),
-    ...logs.map((r) => ({ id: r.log.id, kind: "workout" as const, name: r.user.name, text: "completed a workout", at: r.log.completedAt })),
-    ...msgs.map((r) => ({ id: r.msg.id, kind: "message" as const, name: r.user.name, text: "sent you a message", at: r.msg.createdAt })),
-  ];
-  return items.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()).slice(0, 25);
-}
-
-export async function getActiveProgramsAndPlans(trainerId: string) {
-  const [programs, plans] = await Promise.all([
-    db.select().from(workoutPrograms).where(eq(workoutPrograms.trainerId, trainerId)).orderBy(desc(workoutPrograms.createdAt)),
-    db.select().from(dietPlans).where(eq(dietPlans.trainerId, trainerId)).orderBy(desc(dietPlans.createdAt)),
-  ]);
-  return { programs, plans };
 }

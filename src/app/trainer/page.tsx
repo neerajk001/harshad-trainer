@@ -33,18 +33,14 @@ export default async function CoachHome() {
         <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">Last 7 days</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-3 gap-3">
         <StatTile label="Total Clients" value={String(data.totalClients)} />
         <StatTile label="Active Clients" value={String(data.activeClients)} sub={`of ${data.totalClients}`} />
-        <StatTile label="Avg. Adherence" value={`${data.adherence}%`} sub="30-day workouts" />
         <StatTile label="Check-ins" value={String(data.checkinsThisWeek)} sub="this week" />
       </div>
 
       <section aria-label="Client progress">
-        <SectionTitle
-          title="Client Progress"
-          action={<Link href="/trainer/analytics" className="text-xs font-semibold text-gold">Analytics →</Link>}
-        />
+        <SectionTitle title="Client Progress" />
         <CCard>
           {data.progressSeries.length === 0 ? (
             <p className="py-4 text-center text-sm text-zinc-500">No check-in data yet.</p>

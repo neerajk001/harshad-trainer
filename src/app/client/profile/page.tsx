@@ -16,15 +16,11 @@ export default async function ProfilePage() {
   const planLabel = data.wAssign ? `${data.wAssign.program.name} (${data.wAssign.program.durationWeeks} Weeks)` : null;
 
   const rows = [
-    { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null, tint: "#f97316", soon: false },
-    { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null, tint: "#60a5fa", soon: false },
-    { label: "Progress", value: "", href: "/client/progress", tint: "#4ade80", soon: false },
-    { label: "Messages", value: "", href: "/client/messages", tint: "#f5c518", soon: false },
-    { label: "Measurements", value: "", href: "/client/progress?tab=measure", tint: "#f472b6", soon: false },
-    { label: "Photos", value: "", href: null, tint: "#a78bfa", soon: true },
-    { label: "Notifications", value: "", href: null, tint: "#facc15", soon: true },
-    { label: "Settings", value: "", href: null, tint: "#94a3b8", soon: true },
-    { label: "Help & Support", value: "", href: null, tint: "#22d3ee", soon: true },
+    { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null, tint: "#f97316" },
+    { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null, tint: "#60a5fa" },
+    { label: "Progress", value: "", href: "/client/progress", tint: "#4ade80" },
+    { label: "Measurements", value: "", href: "/client/progress?tab=measure", tint: "#f472b6" },
+    { label: "Messages", value: "", href: "/client/messages", tint: "#f5c518" },
   ];
 
   return (
@@ -35,11 +31,6 @@ export default async function ProfilePage() {
           <h1 className="truncate text-xl font-semibold tracking-tight">{profile.user.name}</h1>
           <p className="truncate text-sm text-zinc-500">{profile.user.email}</p>
         </div>
-        <button type="button" aria-label="Edit profile" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-400">
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path d="M4 20h4l10-10-4-4L4 16v4Z" strokeLinejoin="round" />
-          </svg>
-        </button>
       </CCard>
 
       <CCard className="!p-2">
@@ -58,8 +49,6 @@ export default async function ProfilePage() {
                   <svg viewBox="0 0 24 24" className="h-5 w-5 text-zinc-600" fill="none" stroke="currentColor" strokeWidth={2}>
                     <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                ) : r.soon ? (
-                  <span className="text-xs text-zinc-600">Soon</span>
                 ) : null}
               </span>
             );
@@ -70,7 +59,7 @@ export default async function ProfilePage() {
                     {inner}
                   </Link>
                 ) : (
-                  <div className={r.soon ? "opacity-70" : ""}>{inner}</div>
+                  <div>{inner}</div>
                 )}
               </li>
             );

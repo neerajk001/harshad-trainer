@@ -9,7 +9,7 @@ import { requireClient } from "@/lib/session";
 export default async function ProgressPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { client } = await requireClient();
   const sp = await searchParams;
-  const tab = ["bodyfat", "photos", "measure"].includes(sp.tab ?? "") ? (sp.tab as string) : "weight";
+  const tab = ["bodyfat", "measure"].includes(sp.tab ?? "") ? (sp.tab as string) : "weight";
   const data = await getClientDashboard(client.id);
   const checkins = data.checkins;
 
@@ -54,7 +54,6 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
         tabs={[
           { key: "weight", label: "Weight" },
           { key: "bodyfat", label: "Body Fat" },
-          { key: "photos", label: "Photos" },
           { key: "measure", label: "Measure" },
         ]}
       />
@@ -112,10 +111,6 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
             <LineChart values={bfOrdered.map((c) => c.bodyFatPercent!)} className="h-40 w-full" />
           </div>
         </CCard>
-      ) : null}
-
-      {tab === "photos" ? (
-        <EmptyState title="Photos coming soon" hint="Progress photo uploads aren't part of this MVP yet." />
       ) : null}
 
       {tab === "measure" ? (

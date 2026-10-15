@@ -12,7 +12,6 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -61,28 +60,7 @@ export default function SignUpPage() {
           Create your account and take the first step towards a stronger you.
         </p>
 
-        <div className="mt-7 space-y-3">
-          <button
-            type="button"
-            onClick={() => setNotice("Google sign-in is coming soon. Use email below.")}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3.5 text-sm font-medium text-zinc-100 hover:bg-white/10"
-          >
-            <span className="text-base font-bold">G</span> Continue with Google
-          </button>
-          <button
-            type="button"
-            onClick={() => setNotice("Apple sign-in is coming soon. Use email below.")}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3.5 text-sm font-medium text-zinc-100 hover:bg-white/10"
-          >
-             Continue with Apple
-          </button>
-        </div>
-
-        <div className="my-5 flex items-center gap-3 text-xs text-zinc-600">
-          <span className="h-px flex-1 bg-white/10" /> or <span className="h-px flex-1 bg-white/10" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="mt-7 space-y-3">
           <input
             type="text"
             required
@@ -111,7 +89,6 @@ export default function SignUpPage() {
             onChange={(e) => setPassword(e.target.value)}
             className={cInput}
           />
-          {notice ? <p className="rounded-2xl bg-white/5 px-4 py-2.5 text-xs text-zinc-400">{notice}</p> : null}
           {error ? <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
           <button type="submit" disabled={pending} className={`${goldBtn} w-full`}>
             {pending ? "Creating account…" : "Sign up with Email"}
