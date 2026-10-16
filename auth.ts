@@ -45,6 +45,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               .returning();
             dbUser = inserted[0];
           }
+          // Allowlisted coach emails are always trainers, even if a row was
+          // previously created with the wrong role.
+          if (dbUser && COACH_EMAILS.includes(email) && dbUser.role !== "trainer") {
+            await db.update(users).set({ role: "trainer" }).where(eq(users.id, dbUser.id));
+            dbUser = { ...dbUser, role: "trainer" };
+          }
           if (dbUser) {
             token.uid = dbUser.id;
             token.role = dbUser.role;
