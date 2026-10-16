@@ -150,3 +150,7 @@ export const assignPlansSchema = z.object({
   planId: z.uuid().optional().or(z.literal("")),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
 });
+
+/** Coach logging on behalf of a client (two-way logging). */
+export const coachExerciseLogSchema = exerciseLogSchema.extend({ clientId: z.uuid() });
+export const coachMealLogSchema = mealLogSchema.extend({ clientId: z.uuid() });

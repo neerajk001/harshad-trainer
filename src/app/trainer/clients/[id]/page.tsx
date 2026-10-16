@@ -3,6 +3,8 @@ import Link from "next/link";
 import { CCard, EmptyState, goldBtn } from "@/components/client/ui";
 import { TabLinks } from "@/components/client/tab-links";
 import { LineChart } from "@/components/client/line-chart";
+import { CoachLogExercise } from "@/components/coach/coach-log-exercise";
+import { CoachLogMeal } from "@/components/coach/coach-log-meal";
 import { getClientDetail, getTrainerDietPlans, getTrainerPrograms } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
 import { goalLabel, mealTypeLabel, shortTime } from "@/lib/client-utils";
@@ -241,6 +243,22 @@ export default async function ClientDetailPage({
               </ul>
             )}
           </CCard>
+
+          <CCard>
+            <p className="text-sm font-semibold">Log a lift for {firstName}</p>
+            <p className="mt-1 text-xs text-zinc-500">Record sets on their behalf — it shows up in their app too.</p>
+            <div className="mt-3">
+              <CoachLogExercise
+                clientId={detail.client.id}
+                days={(activeProgram?.days ?? []).map((d) => ({
+                  id: d.id,
+                  name: d.name,
+                  dayNumber: d.dayNumber,
+                  exercises: d.exercises.map((e) => ({ id: e.id, name: e.name, sets: e.sets, reps: e.reps })),
+                }))}
+              />
+            </div>
+          </CCard>
         </div>
       ) : null}
 
@@ -291,6 +309,14 @@ export default async function ClientDetailPage({
                 ))}
               </ul>
             )}
+          </CCard>
+
+          <CCard>
+            <p className="text-sm font-semibold">Log a meal for {firstName}</p>
+            <p className="mt-1 text-xs text-zinc-500">Record food on their behalf — it shows up in their app too.</p>
+            <div className="mt-3">
+              <CoachLogMeal clientId={detail.client.id} />
+            </div>
           </CCard>
         </div>
       ) : null}

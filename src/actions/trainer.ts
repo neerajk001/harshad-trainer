@@ -10,12 +10,15 @@ import {
   dietFoodItems,
   dietMeals,
   dietPlans,
+  exerciseSetLogs,
   inquiries,
+  mealLogs,
   progressCheckins,
   users,
   workoutAssignments,
   workoutDays,
   workoutExercises,
+  workoutLogs,
   workoutPrograms,
 } from "@/db/schema";
 import { requireTrainer } from "@/lib/session";
@@ -24,6 +27,8 @@ import {
   assignDietSchema,
   assignPlansSchema,
   assignWorkoutSchema,
+  coachExerciseLogSchema,
+  coachMealLogSchema,
   dietMealSchema,
   dietPlanSchema,
   exerciseSchema,
@@ -547,6 +552,107 @@ export async function addProgressEntryAction(formData: FormData) {
   });
   revalidatePath(`/trainer/clients/${parsed.data.clientId}`);
   revalidatePath(`/trainer/clients/${parsed.data.clientId}/progress`);
+  return ok();
+}
+
+/** Coach logs a lift (sets) on behalf of a client. */
+export async function logClientExerciseAction(formData: FormData) {
+  const user = await requireTrainer();
+
+  let sets: unknown = [];
+  try {
+    sets = JSON.parse(String(formData.get("sets") ?? "[]"));
+  } catch {
+    return fail("Invalid sets");
+  }
+  const parsed = coachExerciseLogSchema.safeParse({
+    clientId: formData.get("clientId"),
+    exerciseId: formData.get("exerciseId"),
+    workoutDayId: formData.get("workoutDayId") || undefined,
+    notes: formData.get("notes") || undefined,
+    sets,
+  });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+
+  const crow = await db.select().from(clients).where(eq(clients.id, parsed.data.clientId)).limit(1);
+  if (!crow[0] || crow[0].trainerId !== user.id) return fail("Client not found");
+
+  const ex = await db.select().from(workoutExercises).where(eq(workoutExercises.id, parsed.data.exerciseId)).limit(1);
+  if (!ex[0]) return fail("Exercise not found");
+  const day = await db.select().from(workoutDays).where(eq(workoutDays.id, ex[0].workoutDayId)).limit(1);
+  if (!day[0]) return fail("Workout day not found");
+  const assigns = await db.select().from(workoutAssignments).where(eq(workoutAssignments.clientId, parsed.data.clientId));
+  const assignment = assigns.find((a) => a.programId === day[0].programId);
+  if (!assignment) return fail("This exercise isn't in the client's assigned program");
+
+  const rows = parsed.data.sets.filter((s) => s.weight != null || s.reps != null);
+  if (rows.length === 0) return fail("Add at least one set");
+  await db.insert(exerciseSetLogs).values(
+    rows.map((s, i) => ({
+      clientId: parsed.data.clientId,
+      workoutDayId: day[0].id,
+      exerciseId: parsed.data.exerciseId,
+      setNumber: i + 1,
+      weight: s.weight ?? null,
+      reps: s.reps ?? null,
+    })),
+  );
+  // Mark the day complete for this client (once).
+  const already = await db
+    .select({ id: workoutLogs.id })
+    .from(workoutLogs)
+    .where(and(eq(workoutLogs.clientId, parsed.data.clientId), eq(workoutLogs.workoutDayId, day[0].id)))
+    .limit(1);
+  if (already.length === 0) {
+    await db.insert(workoutLogs).values({
+      clientId: parsed.data.clientId,
+      assignmentId: assignment.id,
+      workoutDayId: day[0].id,
+      notes: parsed.data.notes?.trim() || null,
+    });
+  }
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}`);
+  revalidatePath("/client");
+  revalidatePath("/client/workouts");
+  return ok();
+}
+
+/** Coach logs a meal on behalf of a client. */
+export async function logClientMealAction(formData: FormData) {
+  const user = await requireTrainer();
+
+  const parsed = coachMealLogSchema.safeParse({
+    clientId: formData.get("clientId"),
+    foodName: formData.get("foodName"),
+    quantity: formData.get("quantity") || undefined,
+    mealType: formData.get("mealType") || undefined,
+    calories: formData.get("calories") || undefined,
+    protein: formData.get("protein") || undefined,
+    carbs: formData.get("carbs") || undefined,
+    fat: formData.get("fat") || undefined,
+  });
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input");
+
+  const crow = await db
+    .select({ trainerId: clients.trainerId })
+    .from(clients)
+    .where(eq(clients.id, parsed.data.clientId))
+    .limit(1);
+  if (!crow[0] || crow[0].trainerId !== user.id) return fail("Client not found");
+
+  await db.insert(mealLogs).values({
+    clientId: parsed.data.clientId,
+    foodName: parsed.data.foodName.trim(),
+    quantity: parsed.data.quantity?.trim() || null,
+    mealType: parsed.data.mealType ?? null,
+    calories: parsed.data.calories ?? null,
+    protein: parsed.data.protein ?? null,
+    carbs: parsed.data.carbs ?? null,
+    fat: parsed.data.fat ?? null,
+  });
+  revalidatePath(`/trainer/clients/${parsed.data.clientId}`);
+  revalidatePath("/client");
+  revalidatePath("/client/nutrition");
   return ok();
 }
 
