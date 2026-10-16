@@ -7,6 +7,7 @@ import {
   dietFoodItems,
   dietMeals,
   dietPlans,
+  exerciseSetLogs,
   mealLogs,
   progressCheckins,
   users,
@@ -112,7 +113,13 @@ export async function getClientDetail(trainerId: string, clientId: string) {
     .where(eq(progressCheckins.clientId, clientId))
     .orderBy(desc(progressCheckins.createdAt))
     .limit(20);
-  return { client, user: uRows[0], wAssign, dAssign, logs, meals, checkins };
+  const setLogs = await db
+    .select()
+    .from(exerciseSetLogs)
+    .where(eq(exerciseSetLogs.clientId, clientId))
+    .orderBy(desc(exerciseSetLogs.loggedAt))
+    .limit(100);
+  return { client, user: uRows[0], wAssign, dAssign, logs, meals, checkins, setLogs };
 }
 
 export async function getTrainerPrograms(trainerId: string) {

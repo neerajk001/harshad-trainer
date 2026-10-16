@@ -5,7 +5,7 @@ import { TabLinks } from "@/components/client/tab-links";
 import { LineChart } from "@/components/client/line-chart";
 import { getClientDetail, getTrainerDietPlans, getTrainerPrograms } from "@/lib/queries";
 import { requireTrainer } from "@/lib/session";
-import { goalLabel } from "@/lib/client-utils";
+import { goalLabel, mealTypeLabel, shortTime } from "@/lib/client-utils";
 
 export default async function ClientDetailPage({
   params,
@@ -35,10 +35,20 @@ export default async function ClientDetailPage({
   const weightSeries = [...detail.checkins].reverse().map((c) => c.weight);
   const activeProgram = detail.wAssign[0] ? programs.find((p) => p.id === detail.wAssign[0].programId) : null;
   const activePlan = detail.dAssign[0] ? plans.find((p) => p.id === detail.dAssign[0].dietPlanId) : null;
+  const firstName = detail.user.name?.split(" ")[0] ?? "the client";
   const profileBits = [
     detail.client.age ? `${detail.client.age} years` : null,
     detail.client.gender ? detail.client.gender[0].toUpperCase() + detail.client.gender.slice(1) : null,
   ].filter(Boolean);
+
+  const dayNameById = new Map<string, string>();
+  const exerciseNameById = new Map<string, string>();
+  for (const p of programs) {
+    for (const d of p.days) {
+      dayNameById.set(d.id, d.name);
+      for (const e of d.exercises) exerciseNameById.set(e.id, e.name);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -79,6 +89,12 @@ export default async function ClientDetailPage({
             <MiniStat label="Muscle Mass" value={latest?.muscleMass != null ? `${latest.muscleMass} kg` : "—"} />
           </div>
 
+          <div className="grid grid-cols-3 gap-3">
+            <MiniStat label="Workouts" value={String(detail.logs.length)} />
+            <MiniStat label="Meals" value={String(detail.meals.length)} />
+            <MiniStat label="Check-ins" value={String(detail.checkins.length)} />
+          </div>
+
           <CCard>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">Progress Trend</p>
@@ -115,12 +131,47 @@ export default async function ClientDetailPage({
       ) : null}
 
       {tab === "progress" ? (
-        <CCard>
-          <p className="text-sm text-zinc-400">Full progress, measurements and check-ins.</p>
-          <Link href={`/trainer/clients/${detail.client.id}/progress`} className="mt-3 inline-block text-sm font-semibold text-zinc-200">
-            Open progress →
-          </Link>
-        </CCard>
+        <div className="space-y-3">
+          <CCard>
+            <p className="text-sm text-zinc-400">Full progress, measurements and check-ins.</p>
+            <Link href={`/trainer/clients/${detail.client.id}/progress`} className="mt-3 inline-block text-sm font-semibold text-zinc-200">
+              Open progress →
+            </Link>
+          </CCard>
+
+          <CCard className="!p-0">
+            <div className="border-b border-zinc-800 px-5 py-3.5">
+              <p className="text-sm font-semibold">Check-ins</p>
+              <p className="text-xs text-zinc-500">Everything {firstName} submitted</p>
+            </div>
+            {detail.checkins.length === 0 ? (
+              <p className="px-5 py-6 text-center text-sm text-zinc-500">No check-ins yet.</p>
+            ) : (
+              <ul className="divide-y divide-zinc-800">
+                {detail.checkins.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">{new Date(c.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <span className="block truncate text-xs text-zinc-500">
+                        {[
+                          `${c.weight} kg`,
+                          c.bodyFatPercent != null ? `${c.bodyFatPercent}% body fat` : null,
+                          c.muscleMass != null ? `${c.muscleMass} kg muscle` : null,
+                          c.notes,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                    </span>
+                    <span className={`shrink-0 text-xs ${c.status === "approved" ? "text-emerald-400" : c.status === "reviewed" ? "text-zinc-300" : "text-zinc-500"}`}>
+                      {c.status === "approved" ? "Approved" : c.status === "reviewed" ? "Reviewed" : "Pending"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CCard>
+        </div>
       ) : null}
 
       {tab === "workouts" ? (
@@ -140,6 +191,56 @@ export default async function ClientDetailPage({
               );
             })
           )}
+
+          <CCard className="!p-0">
+            <div className="border-b border-zinc-800 px-5 py-3.5">
+              <p className="text-sm font-semibold">Completed workouts</p>
+              <p className="text-xs text-zinc-500">What {firstName} has completed</p>
+            </div>
+            {detail.logs.length === 0 ? (
+              <p className="px-5 py-6 text-center text-sm text-zinc-500">No workouts logged yet.</p>
+            ) : (
+              <ul className="divide-y divide-zinc-800">
+                {detail.logs.map((l) => (
+                  <li key={l.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">
+                        {l.workoutDayId ? dayNameById.get(l.workoutDayId) ?? "Workout" : "Workout"}
+                      </span>
+                      {l.notes ? <span className="block truncate text-xs text-zinc-500">{l.notes}</span> : null}
+                    </span>
+                    <span className="shrink-0 text-xs text-zinc-500">{new Date(l.completedAt).toLocaleDateString()}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CCard>
+
+          <CCard className="!p-0">
+            <div className="border-b border-zinc-800 px-5 py-3.5">
+              <p className="text-sm font-semibold">Exercise log</p>
+              <p className="text-xs text-zinc-500">Sets, weight and reps</p>
+            </div>
+            {detail.setLogs.length === 0 ? (
+              <p className="px-5 py-6 text-center text-sm text-zinc-500">No sets logged yet.</p>
+            ) : (
+              <ul className="divide-y divide-zinc-800">
+                {detail.setLogs.map((s) => (
+                  <li key={s.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{exerciseNameById.get(s.exerciseId) ?? "Exercise"}</span>
+                      <span className="block text-xs text-zinc-500">
+                        Set {s.setNumber} · {new Date(s.loggedAt).toLocaleDateString()}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs text-zinc-400">
+                      {s.weight != null ? `${s.weight} kg` : "—"} × {s.reps ?? "—"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CCard>
         </div>
       ) : null}
 
@@ -163,6 +264,34 @@ export default async function ClientDetailPage({
               {activePlan.notes ? <p className="mt-2 text-sm text-zinc-400">{activePlan.notes}</p> : null}
             </CCard>
           )}
+
+          <CCard className="!p-0">
+            <div className="border-b border-zinc-800 px-5 py-3.5">
+              <p className="text-sm font-semibold">Meals logged</p>
+              <p className="text-xs text-zinc-500">What {firstName} has eaten</p>
+            </div>
+            {detail.meals.length === 0 ? (
+              <p className="px-5 py-6 text-center text-sm text-zinc-500">No meals logged yet.</p>
+            ) : (
+              <ul className="divide-y divide-zinc-800">
+                {detail.meals.map((m) => (
+                  <li key={m.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{m.foodName}</span>
+                      <span className="block text-xs text-zinc-500">
+                        {[mealTypeLabel(m.mealType), m.quantity, shortTime(m.loggedAt)].filter(Boolean).join(" · ")}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs text-zinc-400">
+                      {[m.calories != null ? `${m.calories} kcal` : null, m.protein != null ? `${m.protein}g protein` : null]
+                        .filter(Boolean)
+                        .join(" · ") || "—"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CCard>
         </div>
       ) : null}
     </div>
