@@ -28,7 +28,7 @@ export default function GlobalError({
           }}
         >
           <div style={{ maxWidth: "24rem", textAlign: "center" }}>
-            <p style={{ fontSize: "12px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#a3e635" }}>
+            <p style={{ fontSize: "12px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#71717a" }}>
               Repora
             </p>
             <h1 style={{ fontSize: "22px", fontWeight: 600, marginTop: "8px" }}>Something went wrong</h1>
@@ -40,10 +40,10 @@ export default function GlobalError({
               onClick={reset}
               style={{
                 marginTop: "20px",
-                background: "#65a30d",
-                color: "#fff",
+                background: "#fafafa",
+                color: "#09090b",
                 border: "none",
-                borderRadius: "12px",
+                borderRadius: "8px",
                 padding: "10px 18px",
                 fontSize: "14px",
                 fontWeight: 600,

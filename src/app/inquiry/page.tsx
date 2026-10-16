@@ -31,27 +31,25 @@ export default function InquiryPage() {
   return (
     <div className="min-h-dvh bg-ink px-6 py-8 text-zinc-100 [color-scheme:dark]">
       <div className="mx-auto w-full max-w-md">
-        <Link href="/" aria-label="Back" className="inline-grid h-10 w-10 place-items-center rounded-full border border-white/10 text-zinc-300">
+        <Link href="/" aria-label="Back" className="inline-grid h-10 w-10 place-items-center rounded-full border border-zinc-800 text-zinc-300">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
 
-        <h1 className="mt-6 text-3xl font-semibold tracking-tight">
-          Request <span className="text-gold">Access</span>
-        </h1>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight">Request Access</h1>
         <p className="mt-2 text-sm text-zinc-400">
           Tell us about your goals. A coach reviews every request and creates your account — you&apos;ll receive your
           login details from them.
         </p>
 
         {done ? (
-          <div className="mt-8 rounded-3xl border border-gold/30 bg-gold/5 p-6 text-center">
-            <p className="text-lg font-semibold text-gold">Request received</p>
+          <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center">
+            <p className="text-lg font-semibold text-zinc-100">Request received</p>
             <p className="mt-2 text-sm text-zinc-300">
               Thanks! Your coach will review your inquiry and send your login details soon.
             </p>
-            <Link href="/login" className="mt-4 inline-block text-sm font-semibold text-gold">
+            <Link href="/login" className="mt-4 inline-block text-sm font-semibold text-zinc-100 hover:text-white">
               Back to sign in
             </Link>
           </div>
@@ -73,12 +71,12 @@ export default function InquiryPage() {
             </label>
             <textarea name="message" rows={4} maxLength={2000} placeholder="Anything else? (optional)" className={cInput} />
 
-            {error ? <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
+            {error ? <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
 
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-gold px-5 py-3.5 text-base font-semibold text-zinc-950 transition hover:brightness-95 disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:opacity-50"
             >
               {pending ? "Sending…" : "Send request"}
             </button>
@@ -86,7 +84,7 @@ export default function InquiryPage() {
         )}
 
         <p className="mt-6 text-center text-sm text-zinc-400">
-          Already have an account? <Link href="/login" className="font-semibold text-gold">Log in</Link>
+          Already have an account? <Link href="/login" className="font-semibold text-zinc-100 hover:text-white">Log in</Link>
         </p>
       </div>
     </div>

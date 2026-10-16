@@ -33,7 +33,7 @@ export default async function WorkoutDayPage({
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <Link href="/client/workouts" aria-label="Back" className="mb-3 inline-grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-300">
+          <Link href="/client/workouts" aria-label="Back" className="mb-3 inline-grid h-9 w-9 place-items-center rounded-full border border-zinc-800 text-zinc-300">
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -46,7 +46,7 @@ export default async function WorkoutDayPage({
         <button
           type="button"
           aria-label="Workout actions"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-zinc-300"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-zinc-800 text-zinc-300"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M12 5v14M5 12h14" strokeLinecap="round" />
@@ -61,9 +61,9 @@ export default async function WorkoutDayPage({
             <Link
               key={e.id}
               href={`/client/workouts/exercise/${e.id}?day=${day.id}`}
-              className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900"
+              className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 transition hover:bg-zinc-800/60"
             >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/5 text-zinc-300">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-zinc-800 bg-zinc-800/50 text-zinc-300">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8}>
                   <path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -77,7 +77,7 @@ export default async function WorkoutDayPage({
               </span>
               <span
                 className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
-                  done ? "bg-emerald-500 text-zinc-950" : "border border-white/20 text-transparent"
+                  done ? "bg-zinc-100 text-zinc-950" : "border border-zinc-700 text-transparent"
                 }`}
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={3}>

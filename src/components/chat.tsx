@@ -65,9 +65,9 @@ export function Chat({
             const mine = m.senderRole === myRole;
             return (
               <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] rounded-3xl px-4 py-2.5 text-sm ${mine ? "bg-gold text-zinc-950" : "bg-zinc-800 text-zinc-100"}`}>
+                <div className={`max-w-[80%] rounded-lg px-4 py-2.5 text-sm ${mine ? "bg-zinc-100 text-zinc-950" : "border border-zinc-800 bg-zinc-900 text-zinc-100"}`}>
                   <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                  <p className={`mt-1 text-[10px] ${mine ? "text-zinc-800/70" : "text-zinc-500"}`}>
+                  <p className={`mt-1 text-[10px] ${mine ? "text-zinc-900/60" : "text-zinc-500"}`}>
                     {new Date(m.createdAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
                   </p>
                 </div>
@@ -78,7 +78,7 @@ export function Chat({
         <div ref={endRef} />
       </div>
 
-      {error ? <p role="alert" className="mb-2 rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
+      {error ? <p role="alert" className="mb-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
 
       <form onSubmit={send} className="sticky bottom-20 flex items-end gap-2 md:bottom-0">
         <input
@@ -92,7 +92,7 @@ export function Chat({
           type="submit"
           disabled={pending || !body.trim()}
           aria-label="Send"
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold text-zinc-950 transition hover:brightness-95 disabled:opacity-50"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-950 transition hover:bg-white disabled:opacity-50"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M4 12l16-8-6 16-3-7-7-1Z" strokeLinejoin="round" />

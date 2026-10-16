@@ -58,47 +58,39 @@ export default async function ClientHome() {
 
       {/* Your progress */}
       <Card className="overflow-hidden !p-0">
-        <div
-          className="relative px-5 pb-5 pt-4"
-          style={{ background: "radial-gradient(120% 120% at 100% 0%, rgba(245,197,24,0.18) 0%, rgba(24,24,27,0.9) 55%)" }}
-        >
+        <div className="relative px-5 pb-5 pt-4">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-semibold text-zinc-100">Your Progress</p>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-zinc-500">
                 {wp ? `Week ${wp.week} of ${wp.totalWeeks}` : "No active plan"}
               </p>
             </div>
             {wp ? (
               <Ring value={completedCount} max={totalDays || 1} size={88}>
                 <span className="text-lg font-bold text-zinc-50">{pct}%</span>
-                <span className="text-[10px] text-zinc-400">complete</span>
+                <span className="text-[10px] text-zinc-500">complete</span>
               </Ring>
             ) : null}
           </div>
-          <div className="mt-4 h-24 rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-700 via-zinc-800 to-zinc-900" aria-hidden>
-            <div className="flex h-full items-end p-3">
-              <span className="rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-gold">Future you</span>
-            </div>
-          </div>
         </div>
-        <div className="grid grid-cols-3 divide-x divide-white/5 border-t border-white/10">
+        <div className="grid grid-cols-3 divide-x divide-zinc-800 border-t border-zinc-800">
           <div className="p-3">
-            <p className="text-xs text-zinc-400">Weight</p>
+            <p className="text-xs text-zinc-500">Weight</p>
             <p className="mt-0.5 text-sm font-semibold">{latest ? `${latest.weight} kg` : "—"}</p>
             {weightDelta != null ? (
               <p className={`text-xs ${weightDelta <= 0 ? "text-emerald-400" : "text-amber-400"}`}>{fmtDelta(weightDelta, " kg")}</p>
             ) : null}
           </div>
           <div className="p-3">
-            <p className="text-xs text-zinc-400">Body Fat</p>
+            <p className="text-xs text-zinc-500">Body Fat</p>
             <p className="mt-0.5 text-sm font-semibold">{latest?.bodyFatPercent != null ? `${latest.bodyFatPercent}%` : "—"}</p>
             {bfDelta != null ? (
               <p className={`text-xs ${bfDelta <= 0 ? "text-emerald-400" : "text-amber-400"}`}>{fmtDelta(bfDelta, "%")}</p>
             ) : null}
           </div>
           <div className="p-3">
-            <p className="text-xs text-zinc-400">Muscle</p>
+            <p className="text-xs text-zinc-500">Muscle</p>
             <p className="mt-0.5 text-sm font-semibold">{latest?.muscleMass != null ? `${latest.muscleMass} kg` : "—"}</p>
             {mmDelta != null ? (
               <p className={`text-xs ${mmDelta >= 0 ? "text-emerald-400" : "text-amber-400"}`}>{fmtDelta(mmDelta, " kg")}</p>
@@ -112,7 +104,7 @@ export default async function ClientHome() {
         <SectionTitle
           title="Today's Plan"
           action={
-            <Link href="/client/workouts" className="text-xs font-semibold text-gold">
+            <Link href="/client/workouts" className="text-xs font-semibold text-zinc-400 hover:text-zinc-100">
               View All
             </Link>
           }
@@ -120,13 +112,11 @@ export default async function ClientHome() {
         <div className="space-y-2.5">
           <PlanRow
             href="/client/workouts"
-            tint="#f97316"
             title="Workout"
             sub={todaysWorkout ? `${todaysWorkout.name} (${todaysWorkout.exercises.length} exercises)` : "No workout assigned"}
           />
           <PlanRow
             href="/client/nutrition"
-            tint="#facc15"
             title="Nutrition"
             sub={
               kcalTarget
@@ -136,7 +126,6 @@ export default async function ClientHome() {
           />
           <PlanRow
             href="/client/checkin"
-            tint="#60a5fa"
             title="Check-in"
             sub={
               latest ? `Last weigh-in ${new Date(latest.createdAt).toLocaleDateString()}` : "Add today's weight"
@@ -148,13 +137,13 @@ export default async function ClientHome() {
       {/* Nutrition snapshot */}
       {data.dAssign ? (
         <section aria-label="Nutrition">
-          <SectionTitle title="Nutrition Today" action={<Link href="/client/nutrition" className="text-xs font-semibold text-gold">Open</Link>} />
+          <SectionTitle title="Nutrition Today" action={<Link href="/client/nutrition" className="text-xs font-semibold text-zinc-400 hover:text-zinc-100">Open</Link>} />
           <CCard>
             <div className="space-y-3">
               <MacroBar label="Calories" value={macros.calories} max={kcalTarget} unit=" kcal" />
-              <MacroBar label="Protein" value={macros.protein} max={data.dAssign.plan.proteinTarget} tone="emerald" />
-              <MacroBar label="Carbs" value={macros.carbs} max={data.dAssign.plan.carbsTarget} tone="sky" />
-              <MacroBar label="Fats" value={macros.fat} max={data.dAssign.plan.fatTarget} tone="rose" />
+              <MacroBar label="Protein" value={macros.protein} max={data.dAssign.plan.proteinTarget} tone="dark" />
+              <MacroBar label="Carbs" value={macros.carbs} max={data.dAssign.plan.carbsTarget} tone="mid" />
+              <MacroBar label="Fats" value={macros.fat} max={data.dAssign.plan.fatTarget} tone="darker" />
             </div>
           </CCard>
         </section>
@@ -165,7 +154,7 @@ export default async function ClientHome() {
         <section aria-label="Logged today">
           <SectionTitle title="Logged Today" />
           <CCard className="!p-2">
-            <ul className="divide-y divide-white/5">
+            <ul className="divide-y divide-zinc-800">
               {mealsToday.map((m) => (
                 <li key={m.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
                   <span className="min-w-0">
@@ -187,14 +176,14 @@ export default async function ClientHome() {
 }
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-3xl border border-white/10 bg-zinc-900/70 ${className}`}>{children}</div>;
+  return <div className={`rounded-xl border border-zinc-800 bg-zinc-900 ${className}`}>{children}</div>;
 }
 
-function PlanRow({ href, tint, title, sub }: { href: string; tint: string; title: string; sub: string }) {
+function PlanRow({ href, title, sub }: { href: string; title: string; sub: string }) {
   return (
-    <Link href={href} className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl" style={{ background: `${tint}22` }}>
-        <span className="h-5 w-5 rounded-full" style={{ background: tint }} />
+    <Link href={href} className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 transition hover:bg-zinc-800/60">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-zinc-800 bg-zinc-800/50">
+        <span className="h-4 w-4 rounded-sm bg-zinc-400" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold">{title}</span>

@@ -38,7 +38,7 @@ export function CreatePanel({
         aria-expanded={open}
         aria-controls="create-panel-body"
         aria-label={open ? `Close ${label}` : label}
-        className="fixed right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-gold text-zinc-950 shadow-lg shadow-black/40 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold lg:hidden"
+        className="fixed right-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 transition hover:bg-white active:scale-95 lg:hidden"
         style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
       >
         <svg

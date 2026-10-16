@@ -37,8 +37,8 @@ function LoginInner() {
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-ink px-5 py-10 [color-scheme:dark]">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-zinc-900/70 p-7 text-zinc-100">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Repora</p>
+      <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-7 text-zinc-100">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Repora</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Welcome back</h1>
         <p className="mt-1 text-sm text-zinc-400">Trainers manage clients. Clients track their plans.</p>
         <form className="mt-6 space-y-3" onSubmit={handleSubmit}>
@@ -61,7 +61,7 @@ function LoginInner() {
             className={cInput}
           />
           {error ? (
-            <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+            <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
           ) : null}
           <button type="submit" disabled={pending} className={`${goldBtn} w-full`}>
             {pending ? "Signing in…" : "Sign in"}
@@ -69,7 +69,7 @@ function LoginInner() {
         </form>
 
         <p className="mt-5 text-center text-sm text-zinc-400">
-          New here? <Link href="/inquiry" className="font-semibold text-gold">Request access</Link>
+          New here? <Link href="/inquiry" className="font-semibold text-zinc-100 hover:text-white">Request access</Link>
         </p>
       </div>
     </div>

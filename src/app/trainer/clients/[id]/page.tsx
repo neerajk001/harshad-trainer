@@ -45,7 +45,7 @@ export default async function ClientDetailPage({
       <Link href="/trainer/clients" className="text-sm text-zinc-400 hover:text-zinc-100">← All clients</Link>
 
       <div className="flex items-center gap-4">
-        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white/5 text-xl font-semibold text-zinc-200">
+        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-zinc-800/50 text-xl font-semibold text-zinc-200">
           {detail.user.name?.[0]?.toUpperCase() ?? "C"}
         </span>
         <div className="min-w-0 flex-1">
@@ -56,7 +56,7 @@ export default async function ClientDetailPage({
               .join(" · ")}
           </p>
         </div>
-        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${detail.client.status === "active" ? "bg-emerald-500/15 text-emerald-400" : "bg-white/10 text-zinc-300"}`}>
+        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${detail.client.status === "active" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800 text-zinc-300"}`}>
           {detail.client.status === "active" ? "Active" : "Paused"}
         </span>
       </div>
@@ -82,7 +82,7 @@ export default async function ClientDetailPage({
           <CCard>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">Progress Trend</p>
-              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-400">All time</span>
+              <span className="rounded-full border border-zinc-800 px-3 py-1 text-xs text-zinc-400">All time</span>
             </div>
             {weightSeries.length > 1 ? (
               <LineChart values={weightSeries} height={150} className="mt-3 h-36 w-full" />
@@ -104,7 +104,7 @@ export default async function ClientDetailPage({
           </CCard>
 
           <div className="grid grid-cols-2 gap-3">
-            <Link href={`/trainer/messages/${detail.client.id}`} className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-center text-sm font-medium">
+            <Link href={`/trainer/messages/${detail.client.id}`} className="rounded-lg border border-zinc-800 bg-zinc-800/50 px-4 py-3 text-center text-sm font-medium">
               Message
             </Link>
             <Link href={`/trainer/clients/${detail.client.id}/assign`} className={goldBtn}>
@@ -117,7 +117,7 @@ export default async function ClientDetailPage({
       {tab === "progress" ? (
         <CCard>
           <p className="text-sm text-zinc-400">Full progress, measurements and check-ins.</p>
-          <Link href={`/trainer/clients/${detail.client.id}/progress`} className="mt-3 inline-block text-sm font-semibold text-gold">
+          <Link href={`/trainer/clients/${detail.client.id}/progress`} className="mt-3 inline-block text-sm font-semibold text-zinc-200">
             Open progress →
           </Link>
         </CCard>
@@ -172,7 +172,7 @@ export default async function ClientDetailPage({
 function MiniStat({ label, value, delta, unit = "", goodDown }: { label: string; value: string; delta?: number | null; unit?: string; goodDown?: boolean }) {
   const good = delta != null && (goodDown ? delta <= 0 : delta >= 0);
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-3.5">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-3.5">
       <p className="text-xs text-zinc-400">{label}</p>
       <p className="mt-1 text-base font-semibold">{value}</p>
       {delta != null ? (

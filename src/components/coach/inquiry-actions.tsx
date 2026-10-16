@@ -30,7 +30,7 @@ export function ApproveInquiryForm({ inquiryId, name }: { inquiryId: string; nam
 
   if (creds) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
+      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
         <p className="font-semibold text-emerald-300">Account created</p>
         <p className="mt-1 text-zinc-300">
           Email: <span className="font-mono">{creds.email}</span>

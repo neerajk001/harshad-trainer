@@ -43,8 +43,8 @@ export function CheckinReviewForm({ checkinId, defaultFeedback }: { checkinId: s
         placeholder="Write feedback for your client (optional)…"
         className={cInput}
       />
-      {error ? <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
-      {done ? <p role="status" className="rounded-2xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Saved</p> : null}
+      {error ? <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
+      {done ? <p role="status" className="rounded-lg bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Saved</p> : null}
       <div className="grid grid-cols-2 gap-3">
         <button type="button" onClick={() => submit(false)} disabled={pending !== null} className={ghostBtn}>
           {pending === "feedback" ? "Sending…" : "Send Feedback"}

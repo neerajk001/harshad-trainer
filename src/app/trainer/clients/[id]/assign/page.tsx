@@ -31,7 +31,7 @@ export default async function AssignPage({ params }: { params: Promise<{ id: str
     <div className="space-y-5">
       <Link href={`/trainer/clients/${id}`} className="text-sm text-zinc-400 hover:text-zinc-100">← {detail.user.name}</Link>
       <div className="flex items-center gap-3">
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+        <span className="grid h-11 w-11 place-items-center rounded-full bg-zinc-800/50 font-semibold text-zinc-200">
           {detail.user.name?.[0]?.toUpperCase() ?? "C"}
         </span>
         <h1 className="text-2xl font-semibold tracking-tight">Assign Plans</h1>
@@ -40,7 +40,7 @@ export default async function AssignPage({ params }: { params: Promise<{ id: str
       <CCard>
         <p className="text-sm font-semibold">Workout Program</p>
         {currentW ? (
-          <div className="mt-2 flex items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between gap-3 rounded-lg bg-zinc-800/50 px-4 py-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{currentW.name}</p>
               <p className="text-xs text-zinc-500">{currentW.durationWeeks} weeks · {currentW.level}</p>
@@ -57,7 +57,7 @@ export default async function AssignPage({ params }: { params: Promise<{ id: str
       <CCard>
         <p className="text-sm font-semibold">Diet Plan</p>
         {currentD ? (
-          <div className="mt-2 flex items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3">
+          <div className="mt-2 flex items-center justify-between gap-3 rounded-lg bg-zinc-800/50 px-4 py-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{currentD.name}</p>
               <p className="text-xs text-zinc-500">
@@ -79,7 +79,7 @@ export default async function AssignPage({ params }: { params: Promise<{ id: str
         <p className="text-sm font-semibold">Weekly Schedule</p>
         <div className="mt-3 grid grid-cols-7 gap-1.5">
           {schedule.map((s) => (
-            <div key={s.day} className="rounded-xl bg-white/5 p-2 text-center">
+            <div key={s.day} className="rounded-xl bg-zinc-800/50 p-2 text-center">
               <p className="text-[10px] font-medium text-zinc-500">{s.day}</p>
               <p className="mt-1 truncate text-[10px] text-zinc-300">{s.name}</p>
             </div>

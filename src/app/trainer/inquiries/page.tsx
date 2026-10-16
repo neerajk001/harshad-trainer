@@ -27,7 +27,7 @@ export default async function InquiriesPage() {
       ) : (
         <div className="space-y-3">
           {pending.map((i) => (
-            <CCard key={i.id} className="border-gold/30">
+            <CCard key={i.id} className="border-zinc-800">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold">{i.name}</p>
@@ -39,7 +39,7 @@ export default async function InquiriesPage() {
                 <span className="shrink-0 text-xs text-zinc-500">{timeAgo(i.createdAt)}</span>
               </div>
               {i.goal ? <p className="mt-2 text-sm text-zinc-300">Goal: {goalLabel(i.goal) ?? i.goal}</p> : null}
-              {i.message ? <p className="mt-2 rounded-2xl bg-white/5 p-3 text-sm text-zinc-300">{i.message}</p> : null}
+              {i.message ? <p className="mt-2 rounded-lg bg-zinc-800/50 p-3 text-sm text-zinc-300">{i.message}</p> : null}
               <div className="mt-3">
                 <ApproveInquiryForm inquiryId={i.id} name={i.name} />
               </div>
@@ -57,7 +57,7 @@ export default async function InquiriesPage() {
         <section aria-label="Handled">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-zinc-500">Handled</h2>
           <CCard className="!p-2">
-            <ul className="divide-y divide-white/5">
+            <ul className="divide-y divide-zinc-800">
               {handled.map((i) => (
                 <li key={i.id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
                   <span className="min-w-0">

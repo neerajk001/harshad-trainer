@@ -29,7 +29,7 @@ export default async function CheckinDetailPage({ params }: { params: Promise<{ 
       <Link href="/trainer/checkins" className="text-sm text-zinc-400 hover:text-zinc-100">← Check-ins</Link>
 
       <div className="flex items-center gap-3">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-zinc-800/50 font-semibold text-zinc-200">
           {detail.user.name?.[0]?.toUpperCase() ?? "C"}
         </span>
         <div>
@@ -38,7 +38,7 @@ export default async function CheckinDetailPage({ params }: { params: Promise<{ 
             Check-in · {new Date(c.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
           </p>
         </div>
-        <span className={`ml-auto rounded-full px-2.5 py-0.5 text-xs font-medium ${c.status === "approved" ? "bg-emerald-500/15 text-emerald-400" : c.status === "reviewed" ? "bg-gold/15 text-gold" : "bg-white/10 text-zinc-300"}`}>
+        <span className={`ml-auto rounded-full px-2.5 py-0.5 text-xs font-medium ${c.status === "approved" ? "bg-emerald-500/15 text-emerald-400" : c.status === "reviewed" ? "bg-zinc-800 text-zinc-200" : "bg-zinc-800 text-zinc-300"}`}>
           {c.status === "approved" ? "Approved" : c.status === "reviewed" ? "Reviewed" : "Pending"}
         </span>
       </div>
@@ -51,13 +51,13 @@ export default async function CheckinDetailPage({ params }: { params: Promise<{ 
 
       <CCard>
         <p className="text-sm font-semibold">Wellbeing</p>
-        <ul className="mt-2 divide-y divide-white/5 text-sm">
+        <ul className="mt-2 divide-y divide-zinc-800 text-sm">
           <Row k="How do you feel?" v={c.feel ?? "—"} />
           <Row k="Sleep quality" v={c.sleepHours != null ? `${c.sleepHours} hours` : "—"} />
           <Row k="Energy level" v={c.energyLevel ?? "—"} />
           <Row k="Stress level" v={c.stressLevel ?? "—"} />
         </ul>
-        {c.notes ? <p className="mt-3 rounded-2xl bg-white/5 p-3 text-sm text-zinc-300">{c.notes}</p> : null}
+        {c.notes ? <p className="mt-3 rounded-lg bg-zinc-800/50 p-3 text-sm text-zinc-300">{c.notes}</p> : null}
       </CCard>
 
       <CCard>
@@ -82,7 +82,7 @@ function Row({ k, v }: { k: string; v: string }) {
 function Stat({ label, value, delta, unit = "", goodDown }: { label: string; value: string; delta?: number | null; unit?: string; goodDown?: boolean }) {
   const good = delta != null && (goodDown ? delta <= 0 : delta >= 0);
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-3.5">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-3.5">
       <p className="text-xs text-zinc-400">{label}</p>
       <p className="mt-1 text-base font-semibold">{value}</p>
       {delta != null ? (

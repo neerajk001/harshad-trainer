@@ -59,7 +59,7 @@ export default async function DietBuilderPage({ params }: { params: Promise<{ id
                 <input type="hidden" name="mealId" value={m.id} />
               </ActionForm>
             </div>
-            <ul className="mt-3 divide-y divide-white/5">
+            <ul className="mt-3 divide-y divide-zinc-800">
               {m.foods.map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-2 py-2">
                   <span className="min-w-0">
@@ -80,7 +80,7 @@ export default async function DietBuilderPage({ params }: { params: Promise<{ id
               ))}
               {m.foods.length === 0 ? <li className="py-2 text-xs text-zinc-500">No foods yet.</li> : null}
             </ul>
-            <div className="mt-3 rounded-2xl bg-white/5 p-3">
+            <div className="mt-3 rounded-lg bg-zinc-800/50 p-3">
               <ActionForm action={addFoodItemAction} submitLabel="Add food" successMessage="Food added">
                 <input type="hidden" name="mealId" value={m.id} />
                 <input name="name" placeholder="Food name" required maxLength={160} className={cInput} />

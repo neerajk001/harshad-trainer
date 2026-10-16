@@ -17,7 +17,7 @@ export function TabLinks({
   const pathname = usePathname();
   const sp = useSearchParams();
   return (
-    <div className={`flex gap-1 rounded-2xl bg-zinc-900 p-1 ${className}`}>
+    <div className={`flex gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1 ${className}`}>
       {tabs.map((t) => {
         const active = t.key === activeKey;
         const params = new URLSearchParams(sp.toString());
@@ -27,8 +27,8 @@ export function TabLinks({
             key={t.key}
             href={`${pathname}?${params.toString()}`}
             aria-current={active ? "page" : undefined}
-            className={`flex-1 whitespace-nowrap rounded-xl px-3 py-2 text-center text-sm font-medium transition ${
-              active ? "bg-gold text-zinc-950" : "text-zinc-400 hover:text-zinc-200"
+            className={`flex-1 whitespace-nowrap rounded-md px-3 py-2 text-center text-sm font-medium transition ${
+              active ? "bg-zinc-100 text-zinc-950" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             {t.label}

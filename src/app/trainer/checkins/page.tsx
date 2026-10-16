@@ -35,9 +35,9 @@ export default async function CheckinsPage({ searchParams }: { searchParams: Pro
             <Link
               key={r.checkin.id}
               href={`/trainer/checkins/${r.checkin.id}`}
-              className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900"
+              className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 transition hover:bg-zinc-800/60"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-zinc-800/50 font-semibold text-zinc-200">
                 {r.user.name?.[0]?.toUpperCase() ?? "C"}
               </span>
               <span className="min-w-0 flex-1">
@@ -49,7 +49,7 @@ export default async function CheckinsPage({ searchParams }: { searchParams: Pro
               </span>
               <span className="shrink-0 text-right">
                 <span className="block text-sm font-semibold">{r.checkin.weight} kg</span>
-                <span className={`text-xs ${r.checkin.status === "approved" ? "text-emerald-400" : r.checkin.status === "reviewed" ? "text-gold" : "text-zinc-500"}`}>
+                <span className={`text-xs ${r.checkin.status === "approved" ? "text-emerald-400" : r.checkin.status === "reviewed" ? "text-zinc-200" : "text-zinc-500"}`}>
                   {r.checkin.status === "approved" ? "Approved" : r.checkin.status === "reviewed" ? "Reviewed" : "Review"}
                 </span>
               </span>

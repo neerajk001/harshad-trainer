@@ -43,9 +43,9 @@ export default async function DietPlansPage() {
           {plans.map((p) => {
             const foodCount = p.meals.reduce((s, m) => s + m.foods.length, 0);
             return (
-              <div key={p.id} className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5">
+              <div key={p.id} className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5">
                 <Link href={`/trainer/diet-plans/${p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/5 text-zinc-300">🥗</span>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-zinc-800/50 text-zinc-300">🥗</span>
                   <span className="min-w-0">
                     <span className="block truncate font-medium">{p.name}</span>
                     <span className="block truncate text-xs text-zinc-500">

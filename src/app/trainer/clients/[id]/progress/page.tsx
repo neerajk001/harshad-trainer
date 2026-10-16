@@ -80,7 +80,7 @@ export default async function ClientProgressPage({
         <CCard>
           <p className="text-sm font-semibold">Latest measurements</p>
           {measure ? (
-            <ul className="mt-3 divide-y divide-white/5">
+            <ul className="mt-3 divide-y divide-zinc-800">
               {Object.entries(measure).map(([k, v]) => (
                 <li key={k} className="flex items-center justify-between py-2.5 text-sm">
                   <span className="capitalize text-zinc-400">{k}</span>
@@ -117,7 +117,7 @@ export default async function ClientProgressPage({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-3.5">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-3.5">
       <p className="text-xs text-zinc-400">{label}</p>
       <p className="mt-1 text-base font-semibold">{value}</p>
     </div>

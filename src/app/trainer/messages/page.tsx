@@ -26,9 +26,9 @@ export default async function MessagesPage() {
             <Link
               key={c.client.id}
               href={`/trainer/messages/${c.client.id}`}
-              className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900"
+              className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 transition hover:bg-zinc-800/60"
             >
-              <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+              <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-zinc-800/50 font-semibold text-zinc-200">
                 {c.user.name?.[0]?.toUpperCase() ?? "C"}
               </span>
               <span className="min-w-0 flex-1">
@@ -42,7 +42,7 @@ export default async function MessagesPage() {
               <span className="shrink-0 text-right">
                 {c.lastMessage ? <span className="block text-[10px] text-zinc-500">{timeAgo(c.lastMessage.createdAt)}</span> : null}
                 {c.unread > 0 ? (
-                  <span className="mt-1 inline-grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1.5 text-[10px] font-bold text-zinc-950">
+                  <span className="mt-1 inline-grid h-5 min-w-5 place-items-center rounded-full bg-zinc-100 px-1.5 text-[10px] font-bold text-zinc-950">
                     {c.unread}
                   </span>
                 ) : null}

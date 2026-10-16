@@ -50,7 +50,7 @@ export function TrainerTabBar() {
   return (
     <nav
       aria-label="Trainer sections"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-zinc-950/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/85"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-zinc-800 bg-ink"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto grid max-w-xl grid-cols-4 px-2 pb-2 pt-1.5">
@@ -61,11 +61,11 @@ export function TrainerTabBar() {
               key={t.href}
               href={t.href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[11px] font-medium transition ${
-                active ? "text-lime-400" : "text-zinc-500 hover:text-zinc-200"
+              className={`flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-[11px] font-medium transition ${
+                active ? "text-white" : "text-zinc-500 hover:text-zinc-200"
               }`}
             >
-              <span className={`rounded-full px-3.5 py-1 ${active ? "bg-white/10" : ""}`}>{t.icon(active)}</span>
+              <span className={`rounded-full px-3.5 py-1 ${active ? "bg-zinc-800" : ""}`}>{t.icon(active)}</span>
               {t.label}
             </Link>
           );

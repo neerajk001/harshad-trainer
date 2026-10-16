@@ -30,7 +30,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           <p className="mt-1 text-sm text-zinc-500">Manage all your clients.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/trainer/inquiries" className="rounded-2xl border border-gold/40 px-4 py-2.5 text-sm font-medium text-gold hover:bg-gold/10">
+          <Link href="/trainer/inquiries" className="rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-200 hover:bg-zinc-800">
             Inquiries
           </Link>
           <a href="#add-client" className={`${goldBtn} !px-4 !py-2.5 text-sm`}>
@@ -61,9 +61,9 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
             <Link
               key={r.client.id}
               href={`/trainer/clients/${r.client.id}`}
-              className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3.5 transition hover:bg-zinc-900"
+              className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3.5 transition hover:bg-zinc-800/60"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/5 font-semibold text-zinc-200">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-zinc-800/50 font-semibold text-zinc-200">
                 {r.user.name?.[0]?.toUpperCase() ?? "C"}
               </span>
               <span className="min-w-0 flex-1">

@@ -49,10 +49,10 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
                 {completed}/{days.length} days completed
               </p>
             </div>
-            <span className="text-sm font-bold text-gold">{pct}%</span>
+            <span className="text-sm font-bold text-zinc-100">{pct}%</span>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-800">
+            <div className="h-full rounded-full bg-zinc-100" style={{ width: `${pct}%` }} />
           </div>
         </CCard>
       ) : null}
@@ -64,11 +64,11 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
             <Link
               key={d.id}
               href={`/client/workouts/${d.id}`}
-              className={`flex items-center gap-3 rounded-3xl border px-4 py-4 transition ${
-                done ? "border-gold/40 bg-gold/5" : "border-white/10 bg-zinc-900/70 hover:bg-zinc-900"
+              className={`flex items-center gap-3 rounded-xl border px-4 py-4 transition ${
+                done ? "border-zinc-700 bg-zinc-800/50" : "border-zinc-800 bg-zinc-900 hover:bg-zinc-800/60"
               }`}
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/5 text-sm font-bold text-zinc-200">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-zinc-800 bg-zinc-800/50 text-sm font-bold text-zinc-200">
                 {String(d.dayNumber).padStart(2, "0")}
               </span>
               <span className="min-w-0 flex-1">
@@ -82,7 +82,7 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
               </span>
               <span
                 className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
-                  done ? "bg-emerald-500 text-zinc-950" : "border border-white/20 text-transparent"
+                  done ? "bg-zinc-100 text-zinc-950" : "border border-zinc-700 text-transparent"
                 }`}
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={3}>

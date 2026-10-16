@@ -57,12 +57,12 @@ export function ActionForm({
     >
       {children}
       {error ? (
-        <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/60 dark:text-red-300">
+        <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
           {error}
         </p>
       ) : null}
       {success && !hideSuccess ? (
-        <p role="status" className="rounded-xl bg-lime-50 px-3 py-2 text-sm text-lime-800 dark:bg-lime-950/60 dark:text-lime-200">
+        <p role="status" className="rounded-lg border border-zinc-800 bg-zinc-800/60 px-3 py-2 text-sm text-zinc-100">
           {successMessage}
         </p>
       ) : null}

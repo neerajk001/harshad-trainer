@@ -63,7 +63,7 @@ export function CoachTabBar() {
   return (
     <nav
       aria-label="Coach sections"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/95 backdrop-blur supports-[backdrop-filter]:bg-ink/85"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-800 bg-ink"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto grid max-w-md grid-cols-5 px-2 pb-2 pt-1.5">
@@ -74,8 +74,8 @@ export function CoachTabBar() {
               key={t.href}
               href={t.href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 text-[11px] font-medium transition ${
-                active ? "text-gold" : "text-zinc-500 hover:text-zinc-300"
+              className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1 text-[11px] font-medium transition ${
+                active ? "text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {t.icon(active)}
@@ -101,8 +101,8 @@ export function CoachNav() {
               key={t.href}
               href={t.href}
               aria-current={active ? "page" : undefined}
-              className={`rounded-xl px-3 py-2 font-medium transition ${
-                active ? "bg-white/10 text-gold" : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+              className={`rounded-lg px-3 py-2 font-medium transition ${
+                active ? "bg-zinc-800 text-white" : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100"
               }`}
             >
               {t.label}

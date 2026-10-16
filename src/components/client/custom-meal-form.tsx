@@ -42,8 +42,8 @@ export function CustomMealForm({ mealType }: { mealType: string }) {
         <input name="carbs" type="number" inputMode="numeric" placeholder="Carbs g" min={0} max={2000} className={cInput} />
         <input name="fat" type="number" inputMode="numeric" placeholder="Fat g" min={0} max={2000} className={cInput} />
       </div>
-      {error ? <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
-      {done ? <p role="status" className="rounded-2xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Meal logged</p> : null}
+      {error ? <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
+      {done ? <p role="status" className="rounded-lg bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Meal logged</p> : null}
       <button type="submit" disabled={pending} className={`${goldBtn} w-full`}>
         {pending ? "Logging…" : "Log custom food"}
       </button>

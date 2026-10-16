@@ -27,7 +27,7 @@ export default async function SettingsPage() {
         </dl>
       </CCard>
 
-      <SignOutButton className="w-full rounded-2xl border border-red-500/30 px-5 py-3.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/10" />
+      <SignOutButton className="w-full rounded-lg border border-red-500/30 px-5 py-3.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/10" />
     </div>
   );
 }

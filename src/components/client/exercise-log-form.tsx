@@ -76,7 +76,7 @@ export function ExerciseLogForm({
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3">
-        <Link href={`/client/workouts/${dayId}`} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-300">
+        <Link href={`/client/workouts/${dayId}`} aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-zinc-800 text-zinc-300">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -87,14 +87,14 @@ export function ExerciseLogForm({
         </div>
       </div>
 
-      <div className="flex gap-1 rounded-2xl bg-zinc-900 p-1">
+      <div className="flex gap-1 rounded-lg bg-zinc-900 p-1">
         {tabs.map((t) => (
           <button
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
             className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${
-              tab === t.key ? "bg-gold text-zinc-950" : "text-zinc-400 hover:text-zinc-200"
+              tab === t.key ? "bg-zinc-100 text-zinc-950" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             {t.label}
@@ -104,14 +104,14 @@ export function ExerciseLogForm({
 
       {tab === "log" ? (
         <>
-          <div className="overflow-hidden rounded-3xl border border-white/10">
-            <div className="grid grid-cols-[44px_1fr_1fr_40px] gap-2 border-b border-white/10 bg-white/5 px-3 py-2.5 text-xs font-medium text-zinc-400">
+          <div className="overflow-hidden rounded-xl border border-zinc-800">
+            <div className="grid grid-cols-[44px_1fr_1fr_40px] gap-2 border-b border-zinc-800 bg-zinc-800/50 px-3 py-2.5 text-xs font-medium text-zinc-400">
               <span>Set</span>
               <span>Weight (kg)</span>
               <span>Reps</span>
               <span className="sr-only">Done</span>
             </div>
-            <ul className="divide-y divide-white/5">
+            <ul className="divide-y divide-zinc-800">
               {sets.map((s, i) => (
                 <li key={i} className="grid grid-cols-[44px_1fr_1fr_40px] items-center gap-2 px-3 py-2.5">
                   <span className="text-sm font-medium text-zinc-400">{i + 1}</span>
@@ -120,16 +120,16 @@ export function ExerciseLogForm({
                     value={s.weight}
                     onChange={(e) => update(i, "weight", e.target.value)}
                     placeholder="0"
-                    className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-center text-sm text-zinc-100 outline-none focus:border-gold/60 [color-scheme:dark]"
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-center text-sm text-zinc-100 outline-none focus:border-zinc-500 [color-scheme:dark]"
                   />
                   <input
                     inputMode="numeric"
                     value={s.reps}
                     onChange={(e) => update(i, "reps", e.target.value)}
                     placeholder="0"
-                    className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-center text-sm text-zinc-100 outline-none focus:border-gold/60 [color-scheme:dark]"
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-center text-sm text-zinc-100 outline-none focus:border-zinc-500 [color-scheme:dark]"
                   />
-                  <span className="grid h-7 w-7 place-items-center rounded-full border border-white/15 text-zinc-500">
+                  <span className="grid h-7 w-7 place-items-center rounded-full border border-zinc-800 text-zinc-500">
                     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.4}>
                       <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -155,12 +155,12 @@ export function ExerciseLogForm({
               rows={3}
               maxLength={1000}
               placeholder="How did it feel?"
-              className="w-full rounded-2xl border border-white/10 bg-zinc-900 px-4 py-3 text-base text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-gold/60 [color-scheme:dark]"
+              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-base text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-zinc-500 [color-scheme:dark]"
             />
           </label>
 
-          {error ? <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
-          {done ? <p role="status" className="rounded-2xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Saved. Nice work!</p> : null}
+          {error ? <p role="alert" className="rounded-lg bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p> : null}
+          {done ? <p role="status" className="rounded-lg bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">Saved. Nice work!</p> : null}
 
           <button type="button" onClick={submit} disabled={pending} className={`${goldBtn} w-full`}>
             {pending ? "Saving…" : "Complete Exercise"}
@@ -171,7 +171,7 @@ export function ExerciseLogForm({
       {tab === "history" ? (
         <div className="space-y-3">
           {history.length === 0 ? (
-            <p className="rounded-3xl border border-dashed border-white/15 p-6 text-center text-sm text-zinc-500">
+            <p className="rounded-xl border border-dashed border-zinc-800 p-6 text-center text-sm text-zinc-500">
               No history yet. Log a set to see it here.
             </p>
           ) : (
@@ -182,9 +182,9 @@ export function ExerciseLogForm({
                 return acc;
               }, {}),
             ).map(([date, rows]) => (
-              <div key={date} className="rounded-3xl border border-white/10 bg-zinc-900/70 p-4">
+              <div key={date} className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-sm font-semibold text-zinc-200">{date}</p>
-                <ul className="mt-2 divide-y divide-white/5">
+                <ul className="mt-2 divide-y divide-zinc-800">
                   {rows
                     .sort((a, b) => a.setNumber - b.setNumber)
                     .map((r) => (
@@ -203,7 +203,7 @@ export function ExerciseLogForm({
       ) : null}
 
       {tab === "instructions" ? (
-        <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-5 text-sm leading-relaxed text-zinc-300">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-sm leading-relaxed text-zinc-300">
           {exercise.instructions ?? exercise.notes ?? "No instructions provided. Ask your trainer for form cues."}
         </div>
       ) : null}

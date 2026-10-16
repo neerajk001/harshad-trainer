@@ -21,7 +21,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ clientI
   return (
     <div className="flex min-h-[70dvh] flex-col">
       <div className="mb-3 flex items-center gap-3">
-        <Link href="/trainer/messages" aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-300">
+        <Link href="/trainer/messages" aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-zinc-800 text-zinc-300">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

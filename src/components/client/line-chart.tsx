@@ -26,21 +26,15 @@ export function LineChart({
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className={className} preserveAspectRatio="none" role="img" aria-label="Trend chart">
-      <defs>
-        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4ade80" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
-        </linearGradient>
-      </defs>
       {[0.25, 0.5, 0.75].map((t) => (
         <line key={t} x1={pad} x2={w - pad} y1={pad + t * (h - pad * 2)} y2={pad + t * (h - pad * 2)} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
       ))}
-      <path d={area} fill="url(#areaFill)" />
-      <path d={line} fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      <path d={area} fill="rgba(255,255,255,0.05)" />
+      <path d={line} fill="none" stroke="#fafafa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       {pts.map((p, i) => (
-        <circle key={i} cx={p[0]} cy={p[1]} r="3" fill="#0a0a0b" stroke="#4ade80" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        <circle key={i} cx={p[0]} cy={p[1]} r="2.5" fill="#09090b" stroke="#fafafa" strokeWidth="2" vectorEffect="non-scaling-stroke" />
       ))}
-      <circle cx={last[0]} cy={last[1]} r="4" fill="#4ade80" />
+      <circle cx={last[0]} cy={last[1]} r="4" fill="#fafafa" />
     </svg>
   );
 }

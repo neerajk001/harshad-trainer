@@ -1,5 +1,5 @@
 export default function Loading() {
-  const sk = "animate-pulse rounded-3xl bg-white/5";
+  const sk = "animate-pulse rounded-xl bg-zinc-800/50";
   return (
     <div className="space-y-5">
       <div className={`${sk} h-8 w-56`} />

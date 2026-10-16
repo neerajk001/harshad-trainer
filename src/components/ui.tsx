@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${className}`}>
+    <div className={`rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900 ${className}`}>
       {children}
     </div>
   );
@@ -10,7 +10,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 
 export function DarkCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-white/10 bg-zinc-900 p-5 text-zinc-100 shadow-sm ${className}`}>
+    <div className={`rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-zinc-100 ${className}`}>
       {children}
     </div>
   );
@@ -55,17 +55,17 @@ export function Stat({
 }) {
   if (variant === "dark") {
     return (
-      <div className="rounded-2xl border border-white/10 bg-zinc-900 p-4 shadow-sm">
-        <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">{label}</p>
-        <p className={`mt-1 text-2xl font-semibold tracking-tight ${accent ? "text-lime-400" : "text-zinc-100"}`}>{value}</p>
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-500">{label}</p>
+        <p className={`mt-1 text-2xl font-semibold tracking-tight ${accent ? "text-white" : "text-zinc-100"}`}>{value}</p>
         {sub ? <p className="mt-0.5 text-xs text-zinc-500">{sub}</p> : null}
       </div>
     );
   }
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-sm">
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 dark:border-zinc-800 dark:bg-zinc-900">
       <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-500">{label}</p>
-      <p className={`mt-1 text-xl font-semibold tracking-tight ${accent ? "text-lime-700" : ""}`}>{value}</p>
+      <p className={`mt-1 text-xl font-semibold tracking-tight ${accent ? "text-zinc-900 dark:text-white" : ""}`}>{value}</p>
       {sub ? <p className="mt-0.5 text-xs text-zinc-500">{sub}</p> : null}
     </div>
   );
@@ -111,18 +111,18 @@ export function SectionHeading({
   );
 }
 
-export function ProgressBar({ value, max, tone = "lime" }: { value: number; max: number; tone?: "lime" | "amber" }) {
+export function ProgressBar({ value, max, tone = "neutral" }: { value: number; max: number; tone?: "neutral" | "amber" }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div
-      className="h-2 overflow-hidden rounded-full bg-zinc-100"
+      className="h-1.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
       role="progressbar"
       aria-valuenow={Math.round(value)}
       aria-valuemax={max}
       aria-valuemin={0}
     >
       <div
-        className={`h-full rounded-full transition-all ${tone === "amber" ? "bg-amber-500" : "bg-lime-600"}`}
+        className={`h-full rounded-full transition-all ${tone === "amber" ? "bg-amber-500" : "bg-zinc-900 dark:bg-zinc-100"}`}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -135,7 +135,7 @@ export function Avatar({ name, size = "md" }: { name?: string | null; size?: "sm
   return (
     <span
       aria-hidden
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-lime-700 font-semibold text-white ${sizes[size]}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-700 bg-zinc-800 font-semibold text-zinc-100 ${sizes[size]}`}
     >
       {initial}
     </span>
@@ -144,7 +144,7 @@ export function Avatar({ name, size = "md" }: { name?: string | null; size?: "sm
 
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center dark:border-zinc-700 dark:bg-zinc-900/50">
+    <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
       <p className="font-medium">{title}</p>
       {hint ? <p className="mt-1 text-sm text-zinc-500">{hint}</p> : null}
     </div>
@@ -152,33 +152,33 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
 }
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-2xl bg-zinc-200/70 dark:bg-zinc-800/70 ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-zinc-200/70 dark:bg-zinc-800/70 ${className}`} />;
 }
 
 export function Badge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "green" | "amber" }) {
   const tones: Record<string, string> = {
     neutral: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200",
-    green: "bg-lime-100 text-lime-800 dark:bg-lime-900/40 dark:text-lime-200",
+    green: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
     amber: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
   };
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${tones[tone]}`}>
+    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${tones[tone]}`}>
       {children}
     </span>
   );
 }
 
 export const inputCls =
-  "w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-base outline-none transition focus:border-lime-600 focus:ring-2 focus:ring-lime-600/20 sm:py-2 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900";
+  "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-base outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 sm:py-2 sm:text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-zinc-500";
 
 export const inputDarkCls =
-  "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2.5 text-base text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-gold/60 focus:ring-2 focus:ring-gold/20 sm:py-2 sm:text-sm";
+  "w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-base text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-zinc-600 focus:ring-2 focus:ring-zinc-500/20 sm:py-2 sm:text-sm";
 
 export const btnPrimaryCls =
-  "inline-flex items-center justify-center rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:opacity-50";
+  "inline-flex items-center justify-center rounded-lg bg-zinc-100 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50";
 
 export const btnSecondaryCls =
-  "inline-flex items-center justify-center rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800";
+  "inline-flex items-center justify-center rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800";
 
 export const btnDangerCls =
-  "inline-flex min-h-9 items-center justify-center rounded-xl border border-red-500/30 px-3.5 py-2 text-xs font-medium text-red-400 transition hover:bg-red-500/10 disabled:opacity-50";
+  "inline-flex min-h-9 items-center justify-center rounded-lg border border-red-500/30 px-3.5 py-2 text-xs font-medium text-red-400 transition hover:bg-red-500/10 disabled:opacity-50";

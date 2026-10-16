@@ -71,7 +71,7 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
                   </p>
                 ) : null}
               </div>
-              <span className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-400">All time</span>
+              <span className="rounded-full border border-zinc-800 px-3 py-1.5 text-xs text-zinc-400">All time</span>
             </div>
             <div className="mt-4">
               <LineChart values={weightSeries} className="h-40 w-full" />
@@ -117,7 +117,7 @@ export default async function ProgressPage({ searchParams }: { searchParams: Pro
         <CCard>
           <p className="text-sm font-semibold text-zinc-100">Latest measurements</p>
           {latestWithMeasure?.measurementsJson ? (
-            <ul className="mt-3 divide-y divide-white/5">
+            <ul className="mt-3 divide-y divide-zinc-800">
               {Object.entries(latestWithMeasure.measurementsJson).map(([k, v]) => (
                 <li key={k} className="flex items-center justify-between py-2.5 text-sm">
                   <span className="capitalize text-zinc-400">{k}</span>

@@ -2,15 +2,19 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --brand: #65a30d;
-  --gold: #f5c518;
-  --ink: #0a0a0b;
+  --foreground: #09090b;
+  --muted: #71717a;
+  --line: #e4e4e7;
+  --brand: #a1a1aa;
+  --gold: #a1a1aa;
+  --ink: #09090b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
   --color-brand: var(--brand);
   --color-gold: var(--gold);
   --color-ink: var(--ink);
@@ -27,6 +31,6 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid color-mix(in srgb, currentColor 55%, transparent);
   outline-offset: 2px;
 }

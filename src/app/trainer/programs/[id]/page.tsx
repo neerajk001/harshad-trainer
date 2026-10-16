@@ -71,7 +71,7 @@ export default async function ProgramBuilderPage({ params }: { params: Promise<{
               </ActionForm>
             </div>
 
-            <ul className="mt-3 divide-y divide-white/5">
+            <ul className="mt-3 divide-y divide-zinc-800">
               {d.exercises.map((e) => (
                 <li key={e.id} className="flex items-center justify-between gap-2 py-2">
                   <span className="min-w-0">
@@ -89,7 +89,7 @@ export default async function ProgramBuilderPage({ params }: { params: Promise<{
               {d.exercises.length === 0 ? <li className="py-2 text-xs text-zinc-500">No exercises yet.</li> : null}
             </ul>
 
-            <div className="mt-3 rounded-2xl bg-white/5 p-3">
+            <div className="mt-3 rounded-lg bg-zinc-800/50 p-3">
               <ActionForm action={addExerciseAction} submitLabel="Add exercise" successMessage="Exercise added">
                 <input type="hidden" name="dayId" value={d.id} />
                 <input name="name" placeholder="Exercise name" required maxLength={160} className={cInput} />

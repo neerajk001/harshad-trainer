@@ -7,7 +7,7 @@ export function MultiLineChart({
   height?: number;
   className?: string;
 }) {
-  const colors = ["#f5c518", "#4ade80", "#60a5fa", "#f472b6"];
+  const colors = ["#fafafa", "#a1a1aa", "#71717a", "#d4d4d8"];
   const all = series.flatMap((s) => s.values);
   if (all.length === 0) return null;
   const w = 320;
@@ -34,10 +34,10 @@ export function MultiLineChart({
         const d = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p}`).join(" ");
         return (
           <g key={s.name}>
-            <path d={d} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d={d} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
             {pts.map((p, i) => {
               const [x, y] = p.split(" ");
-              return <circle key={i} cx={x} cy={y} r="2.5" fill="#0a0a0b" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />;
+              return <circle key={i} cx={x} cy={y} r="2.5" fill="#09090b" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />;
             })}
           </g>
         );

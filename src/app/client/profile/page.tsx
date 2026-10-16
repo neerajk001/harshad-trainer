@@ -16,17 +16,17 @@ export default async function ProfilePage() {
   const planLabel = data.wAssign ? `${data.wAssign.program.name} (${data.wAssign.program.durationWeeks} Weeks)` : null;
 
   const rows = [
-    { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null, tint: "#f97316" },
-    { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null, tint: "#60a5fa" },
-    { label: "Progress", value: "", href: "/client/progress", tint: "#4ade80" },
-    { label: "Measurements", value: "", href: "/client/progress?tab=measure", tint: "#f472b6" },
-    { label: "Messages", value: "", href: "/client/messages", tint: "#f5c518" },
+    { label: "My Goal", value: goalLabel(profile.client.goal) ?? "Not set", href: null as string | null },
+    { label: "My Plan", value: planLabel ?? "No plan yet", href: "/client/workouts" as string | null },
+    { label: "Progress", value: "", href: "/client/progress" },
+    { label: "Measurements", value: "", href: "/client/progress?tab=measure" },
+    { label: "Messages", value: "", href: "/client/messages" },
   ];
 
   return (
     <div className="space-y-5">
       <CCard className="flex items-center gap-4">
-        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-gold text-2xl font-bold text-zinc-950">{initials}</span>
+        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-zinc-100 text-2xl font-bold text-zinc-950">{initials}</span>
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-xl font-semibold tracking-tight">{profile.user.name}</h1>
           <p className="truncate text-sm text-zinc-500">{profile.user.email}</p>
@@ -34,12 +34,12 @@ export default async function ProfilePage() {
       </CCard>
 
       <CCard className="!p-2">
-        <ul className="divide-y divide-white/5">
+        <ul className="divide-y divide-zinc-800">
           {rows.map((r) => {
             const inner = (
               <span className="flex items-center gap-3 px-3 py-3.5">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl" style={{ background: `${r.tint}22` }}>
-                  <span className="h-3.5 w-3.5 rounded-full" style={{ background: r.tint }} />
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-zinc-800 bg-zinc-800/50">
+                  <span className="h-3.5 w-3.5 rounded-sm bg-zinc-400" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-medium">{r.label}</span>
@@ -55,7 +55,7 @@ export default async function ProfilePage() {
             return (
               <li key={r.label}>
                 {r.href ? (
-                  <Link href={r.href} className="block rounded-2xl transition hover:bg-white/5">
+                  <Link href={r.href} className="block rounded-lg transition hover:bg-zinc-800/50">
                     {inner}
                   </Link>
                 ) : (
@@ -67,7 +67,7 @@ export default async function ProfilePage() {
         </ul>
       </CCard>
 
-      <SignOutButton className="w-full rounded-2xl border border-red-500/30 px-5 py-3.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/10" />
+      <SignOutButton className="w-full rounded-lg border border-red-500/30 px-5 py-3.5 text-sm font-semibold text-red-300 transition hover:bg-red-500/10" />
 
       <p className="text-center text-xs text-zinc-600">
         {profile.trainer ? `Trainer: ${profile.trainer.name}` : "No trainer linked yet"}

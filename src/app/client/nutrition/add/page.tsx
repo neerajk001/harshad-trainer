@@ -32,7 +32,7 @@ export default async function AddMealPage({
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3">
-        <Link href="/client/nutrition" aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-zinc-300">
+        <Link href="/client/nutrition" aria-label="Back" className="grid h-9 w-9 place-items-center rounded-full border border-zinc-800 text-zinc-300">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -114,7 +114,7 @@ export default async function AddMealPage({
 
       <Link
         href="/client/nutrition"
-        className="flex w-full items-center justify-center rounded-2xl bg-gold px-5 py-3.5 text-base font-semibold text-zinc-950"
+        className="flex w-full items-center justify-center rounded-lg bg-zinc-100 px-5 py-3.5 text-base font-semibold text-zinc-950"
       >
         Done
       </Link>

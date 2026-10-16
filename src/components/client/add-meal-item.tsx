@@ -44,8 +44,8 @@ export function AddMealItem({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-3xl border border-white/10 bg-zinc-900/70 px-4 py-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/5 text-lg">🍽️</span>
+    <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-zinc-800/50 text-lg">🍽️</span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium">{payload.foodName}</span>
         <span className="block truncate text-xs text-zinc-500">{subtitle ?? right ?? ""}</span>
@@ -56,7 +56,7 @@ export function AddMealItem({
         disabled={state !== "idle"}
         aria-label={`Add ${payload.foodName}`}
         className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition ${
-          state === "done" ? "bg-emerald-500 text-zinc-950" : "border border-gold/50 text-gold hover:bg-gold/10"
+          state === "done" ? "bg-emerald-500 text-zinc-950" : "border border-zinc-700 text-zinc-200 hover:bg-zinc-800"
         }`}
       >
         {state === "done" ? (

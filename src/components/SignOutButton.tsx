@@ -9,7 +9,7 @@ export function SignOutButton({ className = "" }: { className?: string }) {
       onClick={() => signOut({ callbackUrl: "/login" })}
       className={
         className ||
-        "rounded-xl border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        "rounded-lg border border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-200 hover:bg-zinc-800"
       }
     >
       Sign out

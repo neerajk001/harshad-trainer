@@ -40,9 +40,9 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
                 <span className="text-[10px] text-zinc-500">{pct}%</span>
               </Ring>
               <div className="flex-1 space-y-3">
-                <MacroBar label="Protein" value={macros.protein} max={plan?.proteinTarget ?? null} tone="emerald" />
-                <MacroBar label="Carbs" value={macros.carbs} max={plan?.carbsTarget ?? null} tone="sky" />
-                <MacroBar label="Fats" value={macros.fat} max={plan?.fatTarget ?? null} tone="rose" />
+                <MacroBar label="Protein" value={macros.protein} max={plan?.proteinTarget ?? null} tone="dark" />
+                <MacroBar label="Carbs" value={macros.carbs} max={plan?.carbsTarget ?? null} tone="mid" />
+                <MacroBar label="Fats" value={macros.fat} max={plan?.fatTarget ?? null} tone="darker" />
               </div>
             </div>
           </CCard>
@@ -51,7 +51,7 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
             <SectionTitle
               title="Today"
               action={
-                <Link href="/client/nutrition/add" className="text-xs font-semibold text-gold">
+                <Link href="/client/nutrition/add" className="text-xs font-semibold text-zinc-400 hover:text-zinc-100">
                   + Add Meal
                 </Link>
               }
@@ -61,7 +61,7 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
                 title="No meals logged yet"
                 hint="Tap Add Meal to log what you eat."
                 action={
-                  <Link href="/client/nutrition/add" className="rounded-2xl bg-gold px-5 py-2.5 text-sm font-semibold text-zinc-950">
+                  <Link href="/client/nutrition/add" className="rounded-lg bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-zinc-950">
                     Log a Meal
                   </Link>
                 }
@@ -73,12 +73,12 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
                   if (items.length === 0) return null;
                   const mtMacros = sumMacros(items);
                   return (
-                    <div key={mt.key} className="rounded-3xl border border-white/10 bg-zinc-900/70 p-4">
+                    <div key={mt.key} className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold text-zinc-100">{mt.label}</p>
                         <p className="text-xs text-zinc-500">{shortTime(items[0].loggedAt)}</p>
                       </div>
-                      <ul className="mt-2 divide-y divide-white/5">
+                      <ul className="mt-2 divide-y divide-zinc-800">
                         {items.map((m) => (
                           <li key={m.id} className="flex items-center justify-between gap-3 py-2">
                             <span className="min-w-0 truncate text-sm text-zinc-200">{m.foodName}</span>
@@ -94,9 +94,9 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
                   );
                 })}
                 {mealsToday.some((m) => !m.mealType) ? (
-                  <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-4">
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                     <p className="text-sm font-semibold text-zinc-100">Other</p>
-                    <ul className="mt-2 divide-y divide-white/5">
+                    <ul className="mt-2 divide-y divide-zinc-800">
                       {mealsToday
                         .filter((m) => !m.mealType)
                         .map((m) => (
@@ -133,12 +133,12 @@ export default async function NutritionPage({ searchParams }: { searchParams: Pr
                 {plan.notes ? <p className="mt-2 text-sm text-zinc-400">{plan.notes}</p> : null}
               </CCard>
               {data.dietMealsWithFood.map((m, i) => (
-                <div key={m.id} className="rounded-3xl border border-white/10 bg-zinc-900/70 p-4">
+                <div key={m.id} className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
                   <p className="text-sm font-semibold">
                     <span className="mr-2 text-xs font-bold text-zinc-500">{String(i + 1).padStart(2, "0")}</span>
                     {m.name}
                   </p>
-                  <ul className="mt-2 divide-y divide-white/5">
+                  <ul className="mt-2 divide-y divide-zinc-800">
                     {m.foods.map((f) => (
                       <li key={f.id} className="flex items-center justify-between gap-3 py-2">
                         <span className="min-w-0">
