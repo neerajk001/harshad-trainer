@@ -90,12 +90,13 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         <CreatePanel label="Add client" className="">
           <CCard>
             <h2 className="font-semibold">Add client</h2>
-            <p className="mt-1 text-xs text-zinc-500">Creates the client login immediately. Share credentials securely.</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              Registers the client&apos;s email. They sign in with Google using it — no password needed.
+            </p>
             <div className="mt-4">
-              <ActionForm action={addClientAction} submitLabel="Create client" successMessage="Client created">
+              <ActionForm action={addClientAction} submitLabel="Add client" successMessage="Client added">
                 <input name="name" placeholder="Full name" required maxLength={120} className={cInput} />
-                <input name="email" type="email" placeholder="Email" required maxLength={255} className={cInput} />
-                <input name="password" type="password" placeholder="Temporary password (min 8)" required minLength={8} className={cInput} />
+                <input name="email" type="email" placeholder="Google email" required maxLength={255} className={cInput} />
                 <input name="phone" placeholder="Phone (optional)" maxLength={40} className={cInput} />
                 <input name="goal" placeholder="Goal (optional)" maxLength={500} className={cInput} />
               </ActionForm>

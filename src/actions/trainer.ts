@@ -1,7 +1,5 @@
 "use server";
 
-import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -43,6 +41,10 @@ function ok() {
   return { ok: true as const };
 }
 
+// Sign-in is Google-only, so accounts never carry a usable password. The
+// password_hash column is still required, so we store a clear marker.
+const NO_PASSWORD = "google-oauth-only";
+
 /** Confirm a workout day belongs to a program owned by this trainer. */
 async function ownsWorkoutDay(trainerId: string, dayId: string) {
   const day = await db.select().from(workoutDays).where(eq(workoutDays.id, dayId)).limit(1);
@@ -73,7 +75,6 @@ export async function addClientAction(formData: FormData) {
   const parsed = addClientSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
-    password: formData.get("password"),
     goal: formData.get("goal") || undefined,
     phone: formData.get("phone") || undefined,
   });
@@ -83,10 +84,9 @@ export async function addClientAction(formData: FormData) {
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
   if (existing.length > 0) return fail("A user with this email already exists");
 
-  const passwordHash = await bcrypt.hash(parsed.data.password, 10);
   const [created] = await db
     .insert(users)
-    .values({ name: parsed.data.name.trim(), email, role: "client", passwordHash })
+    .values({ name: parsed.data.name.trim(), email, role: "client", passwordHash: NO_PASSWORD })
     .returning({ id: users.id });
   await db.insert(clients).values({
     userId: created.id,
@@ -598,9 +598,9 @@ export async function declineInquiryAction(formData: FormData) {
 }
 
 /**
- * Approve a public inquiry: create the client's login (random temporary
- * password) and link them to this coach. Returns the credentials once so the
- * coach can share them; they are never stored in plaintext.
+ * Approve a public inquiry: register the client's email and link them to this
+ * coach. They then sign in with Google using that email — there are no
+ * passwords.
  */
 export async function approveInquiryAction(formData: FormData) {
   const user = await requireTrainer();
@@ -615,11 +615,9 @@ export async function approveInquiryAction(formData: FormData) {
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
   if (existing.length > 0) return fail("An account with this email already exists");
 
-  const password = randomBytes(9).toString("base64url");
-  const passwordHash = await bcrypt.hash(password, 10);
   const [created] = await db
     .insert(users)
-    .values({ name: inquiry.name.trim(), email, role: "client", passwordHash })
+    .values({ name: inquiry.name.trim(), email, role: "client", passwordHash: NO_PASSWORD })
     .returning({ id: users.id });
   await db.insert(clients).values({
     userId: created.id,
@@ -633,5 +631,5 @@ export async function approveInquiryAction(formData: FormData) {
   revalidatePath("/trainer/inquiries");
   revalidatePath("/trainer/clients");
   revalidatePath("/trainer");
-  return { ok: true as const, email, password };
+  return { ok: true as const, email };
 }

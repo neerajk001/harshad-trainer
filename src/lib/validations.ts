@@ -1,17 +1,10 @@
 import { z } from "zod";
 
 export const emailSchema = z.email().max(255);
-export const passwordSchema = z.string().min(8).max(128);
-
-export const loginSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(1, "Password is required"),
-});
 
 export const addClientSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(120),
   email: emailSchema,
-  password: passwordSchema,
   goal: z.string().trim().max(500).optional(),
   phone: z.string().trim().max(40).optional(),
 });

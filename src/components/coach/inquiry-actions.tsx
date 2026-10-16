@@ -8,10 +8,10 @@ import { goldBtn } from "@/components/client/ui";
 export function ApproveInquiryForm({ inquiryId, name }: { inquiryId: string; name: string }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [creds, setCreds] = useState<{ email: string; password: string } | null>(null);
+  const [approvedEmail, setApprovedEmail] = useState<string | null>(null);
 
   async function approve() {
-    if (!window.confirm(`Create a login for ${name} and approve this inquiry?`)) return;
+    if (!window.confirm(`Approve ${name}? They'll sign in with Google using their email.`)) return;
     setError(null);
     setPending(true);
     try {
@@ -22,23 +22,19 @@ export function ApproveInquiryForm({ inquiryId, name }: { inquiryId: string; nam
         setError(res.error ?? "Could not approve");
         return;
       }
-      setCreds({ email: res.email, password: res.password });
+      setApprovedEmail(res.email);
     } finally {
       setPending(false);
     }
   }
 
-  if (creds) {
+  if (approvedEmail) {
     return (
-      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
-        <p className="font-semibold text-emerald-300">Account created</p>
+      <div className="rounded-lg border border-zinc-800 bg-zinc-800/50 p-3 text-sm">
+        <p className="font-semibold text-zinc-100">Approved</p>
         <p className="mt-1 text-zinc-300">
-          Email: <span className="font-mono">{creds.email}</span>
+          <span className="font-mono">{approvedEmail}</span> can now sign in with Google.
         </p>
-        <p className="text-zinc-300">
-          Temp password: <span className="font-mono">{creds.password}</span>
-        </p>
-        <p className="mt-1 text-xs text-emerald-200/80">Share these securely. They won&apos;t be shown again.</p>
       </div>
     );
   }
