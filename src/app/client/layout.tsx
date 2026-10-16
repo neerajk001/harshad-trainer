@@ -31,7 +31,7 @@ export default async function ClientLayout({ children }: { children: ReactNode }
                 <path d="M5 7h14M5 12h9M5 17h5" strokeLinecap="round" />
               </svg>
             </span>
-            <span className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-100">Repora</span>
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-100">Harsh Gorul</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/client/profile" aria-label="Profile">

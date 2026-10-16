@@ -1,10 +1,10 @@
-/* Repora service worker — offline fallback only.
+/* Harsh Gorul service worker — offline fallback only.
    DB-backed pages, Server Actions and /api/* always require the network.
 
    Caching policy is deliberately NETWORK-FIRST (even for static assets) so a
    cache entry can never shadow a newer build. Offline support is limited to
    the app shell + /offline.html, which is all this MVP needs. */
-const CACHE = "repora-v2";
+const CACHE = "harsh-gorul-v2";
 const OFFLINE_URL = "/offline.html";
 const PRECACHE = [
   OFFLINE_URL,

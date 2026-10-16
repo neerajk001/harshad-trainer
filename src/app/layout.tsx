@@ -16,16 +16,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Repora — Trainer & Client",
-    template: "%s · Repora",
+    default: "Harsh Gorul — Trainer & Client",
+    template: "%s · Harsh Gorul",
   },
   description: "Trainers manage clients and assign workout + diet plans. Clients log progress.",
-  applicationName: "Repora",
+  applicationName: "Harsh Gorul",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Repora",
+    title: "Harsh Gorul",
   },
   icons: {
     icon: [

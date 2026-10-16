@@ -23,7 +23,7 @@ export function Landing({ dashboardHref }: { dashboardHref?: string }) {
                 <path d="M5 7h14M5 12h9M5 17h5" strokeLinecap="round" />
               </svg>
             </span>
-            <span className="text-sm font-bold uppercase tracking-[0.2em]">Repora</span>
+            <span className="text-sm font-bold uppercase tracking-[0.2em]">Harsh Gorul</span>
           </div>
           <Link
             href={dashboardHref ?? "/login"}

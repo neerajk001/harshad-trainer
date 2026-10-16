@@ -1,7 +1,7 @@
-# Repora — Product Requirements
+# Harsh Gorul — Product Requirements
 
 ## Product in one sentence
-Repora is a simple trainer-client PWA: trainers manage multiple clients and assign workout and diet plans; clients view their plans and log progress.
+Harsh Gorul is a simple trainer-client PWA: trainers manage multiple clients and assign workout and diet plans; clients view their plans and log progress.
 
 ## Users and permissions
 
@@ -96,7 +96,7 @@ Use the ORM's appropriate JSON type for optional measurements if practical. Avoi
 
 ## Design direction
 Use the supplied reference image as visual inspiration:
-- Product name: Repora
+- Product name: Harsh Gorul
 - Premium, restrained fitness-tech aesthetic
 - Trainer dashboard: dark charcoal/navy surfaces, subtle borders, muted text, restrained lime-green accent
 - Client mobile UI: clean light surfaces, strong readability, green primary actions

@@ -1,6 +1,6 @@
-# Repora — Trainer & Client PWA
+# Harsh Gorul — Trainer & Client PWA
 
-Repora is a trainer-client PWA: coaches manage multiple clients and assign workout + diet plans; clients view their plans, log progress and message their coach. Next.js App Router + TypeScript + Tailwind + Neon PostgreSQL + Drizzle + Auth.js (Google OAuth) + installable PWA. No separate backend — Server Actions and Route Handlers are the backend.
+Harsh Gorul is a trainer-client PWA: coaches manage multiple clients and assign workout + diet plans; clients view their plans, log progress and message their coach. Next.js App Router + TypeScript + Tailwind + Neon PostgreSQL + Drizzle + Auth.js (Google OAuth) + installable PWA. No separate backend — Server Actions and Route Handlers are the backend.
 
 ## Stack
 

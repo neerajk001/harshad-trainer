@@ -11,7 +11,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="flex min-h-dvh items-center justify-center bg-zinc-950 px-4">
       <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center text-zinc-100">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Repora</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Harsh Gorul</p>
         <h1 className="mt-2 text-xl font-semibold tracking-tight">Something went wrong</h1>
         <p className="mt-2 text-sm text-zinc-400">
           We couldn&apos;t load this page. This is usually temporary — try again.

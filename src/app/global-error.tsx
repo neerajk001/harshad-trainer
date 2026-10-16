@@ -29,7 +29,7 @@ export default function GlobalError({
         >
           <div style={{ maxWidth: "24rem", textAlign: "center" }}>
             <p style={{ fontSize: "12px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#71717a" }}>
-              Repora
+              Harsh Gorul
             </p>
             <h1 style={{ fontSize: "22px", fontWeight: 600, marginTop: "8px" }}>Something went wrong</h1>
             <p style={{ color: "#a1a1aa", fontSize: "14px", marginTop: "8px" }}>

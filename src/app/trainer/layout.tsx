@@ -33,7 +33,7 @@ export default async function TrainerLayout({ children }: { children: ReactNode 
                   <path d="M5 7h14M5 12h9M5 17h5" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="text-sm font-bold uppercase tracking-[0.2em]">Repora</span>
+              <span className="text-sm font-bold uppercase tracking-[0.2em]">Harsh Gorul</span>
             </Link>
             <div className="hidden md:block">
               <CoachNav />

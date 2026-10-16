@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* Repora is fully personalized (auth-gated DB pages), so use classic
+  /* Harsh Gorul is fully personalized (auth-gated DB pages), so use classic
      dynamic rendering instead of Cache Components static prerendering. */
   cacheComponents: false,
   turbopack: {

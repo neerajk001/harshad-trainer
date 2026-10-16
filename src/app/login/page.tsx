@@ -22,7 +22,7 @@ function LoginInner() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-ink px-5 py-10 [color-scheme:dark]">
       <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-7 text-zinc-100">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Repora</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Harsh Gorul</p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">Welcome back</h1>
         <p className="mt-1 text-sm text-zinc-400">
           Sign in with the Google account your coach registered.

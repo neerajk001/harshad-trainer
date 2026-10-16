@@ -1,13 +1,13 @@
 {
-  "name": "Repora — Trainer & Client",
-  "short_name": "Repora",
+  "name": "Harsh Gorul — Trainer & Client",
+  "short_name": "Harsh Gorul",
   "description": "Trainers manage clients and assign workout + diet plans. Clients log progress.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#09090b",
-  "theme_color": "#65a30d",
+  "theme_color": "#09090b",
   "icons": [
     {
       "src": "/icons/icon.svg",

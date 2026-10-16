@@ -8,7 +8,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Repora PWA — Coding Instructions
+# Harsh Gorul PWA — Coding Instructions
 
 ## Goal
 Build a simple, working full-stack PWA for personal trainers to manage multiple clients. There are two roles: **Trainer** and **Client**. Use the supplied design reference as visual direction, not as a requirement to reproduce every detail.
